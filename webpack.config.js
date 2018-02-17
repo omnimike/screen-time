@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-    entry: './client/index.jsx',
+    entry: './client/index.js',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'build/static')
@@ -10,16 +10,23 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.jsx$/,
+                test: /\.jsx?$/,
                 exclude: /(node_modules|bower_components)/,
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['env', 'react']
+                        presets: ['env', 'react'],
+                        plugins: ['transform-object-rest-spread']
                     }
                 }
             }
         ]
+    },
+    resolve: {
+        modules: [
+            'node_modules',
+            path.resolve(__dirname, 'client')
+        ],
     }
 };
 
