@@ -51,6 +51,9 @@ export default {
     label_exposure_social_environment_specific: 'Exposure specific social environment',
     label_exposure_social_environment_general: 'Exposure general social environment',
 
+    button_exposure_add: 'Add Exposure',
+    button_exposure_remove: 'Remove Exposure',
+
     heading_outcome_info: 'Outcome Info',
     subheading_outcome_measurement: 'Outcome Measurement',
     subheading_outcome_type: 'Outcome type',
@@ -61,8 +64,16 @@ export default {
     label_outcome_higher_order_variable: 'Higher-order variable',
     label_outcome_category: 'Outcome category',
 
+    button_outcome_add: 'Add Outcome',
+    button_outcome_remove: 'Remove Outcome',
+
+    heading_moderator_info: 'Moderator Info',
+
     label_moderator_level: 'Moderator Level',
     label_moderator_category: 'Moderator Category',
+
+    button_moderator_add: 'Add Moderator',
+    button_moderator_remove: 'Remove Moderator',
 
     heading_benefit_and_risk_analysis: 'Benefit and Risk Analysis',
     subheading_quantitative_strength: 'Quantitative Strength of Association',
