@@ -1,12 +1,13 @@
 const path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
     entry: './client/index.js',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'build/static')
+        path: path.resolve(__dirname, 'server/static')
     },
-    devtool: 'eval-cheap-module-source-map',
+    //devtool: 'eval-cheap-module-source-map',
     module: {
         rules: [
             {
@@ -27,6 +28,9 @@ module.exports = {
             'node_modules',
             path.resolve(__dirname, 'client')
         ],
-    }
+    },
+    plugins: [
+        new UglifyJsPlugin()
+    ]
 };
 

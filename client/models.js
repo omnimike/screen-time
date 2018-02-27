@@ -1,24 +1,24 @@
 // @flow
 
 export type Review = {
-    review_id: number,
+    id: string,
     extractor_name: string,
     extraction_date: string,
     first_author: string,
-    year_of_publication: number,
+    year_of_publication: number | null,
     search_strategy_desc: string,
     sample_age_desc: string,
-    sample_age_lowest_mean: number,
-    sample_age_highest_mean: number,
+    sample_age_lowest_mean: number | null,
+    sample_age_highest_mean: number | null,
     are_you_sure: boolean,
     inclusion_exclusion_concerns: string,
-    earliest_publication_year: number,
-    latest_publication_year: number,
-    number_of_studies: number,
-    number_of_samples: number,
-    rating_of_low_risk_bias: number,
-    rating_of_moderate_risk_bias: number,
-    rating_of_high_risk_bias: number,
+    earliest_publication_year: number | null,
+    latest_publication_year: number | null,
+    number_of_studies: number | null,
+    number_of_samples: number | null,
+    rating_of_low_risk_bias: number | null,
+    rating_of_moderate_risk_bias: number | null,
+    rating_of_high_risk_bias: number | null,
     bias_rating_system: string,
     bias_rating_system_reference: string,
     level_of_evidence_judgement_1: string,
@@ -32,8 +32,7 @@ export type Review = {
 };
 
 export type Exposure = {
-    exposure_id: number,
-    review_id: number,
+    id: string,
     content_specifics: string,
     content_category: string,
     measure: string,
@@ -48,8 +47,7 @@ export type Exposure = {
 };
 
 export type Outcome = {
-    outcome_id: number,
-    review_id: number,
+    id: string,
     measure: string,
     measure_type: string,
     specific_variable: string,
@@ -58,23 +56,20 @@ export type Outcome = {
 };
 
 export type Moderator = {
-    moderator_id: number,
-    review_id: number,
+    id: string,
     level: string,
     category: string,
 };
 
 export type EffectSize = {
-    review_id: number,
-    exposure_id: number,
-    outcome_id: number,
-    moderator_id: number,
+    exposure_id: string,
+    outcome_id: string,
+    moderator_id: string,
     team_narrative_summary: string,
-    value: number,
-    value_lower_bound: number,
-    value_upper_bound: number,
-    p_value: number,
+    value: number | null,
+    value_lower_bound: number | null,
+    value_upper_bound: number | null,
+    p_value: number | null,
     statistical_test: string,
     comments: string,
 };
-

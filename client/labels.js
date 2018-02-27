@@ -75,7 +75,7 @@ export default {
     button_moderator_add: 'Add Moderator',
     button_moderator_remove: 'Remove Moderator',
 
-    heading_benefit_and_risk_analysis: 'Benefit and Risk Analysis',
+    heading_effect_size: 'Effect Size',
     subheading_quantitative_strength: 'Quantitative Strength of Association',
 
     label_effect_size_team_narrative_summary: 'Team\'s Narrative Summary',
@@ -85,4 +85,6 @@ export default {
     label_effect_size_p_value: 'p-value',
     label_effect_size_statistical_test: 'Statistical Test',
     label_effect_size_comments: 'Comments',
+
+    button_save: 'Save'
 };

@@ -4,9 +4,16 @@ import React from 'react';
 import labels from './labels';
 import uuid from './vendor/uuid';
 import { delimIndexBy } from './utils';
+import type {
+    Review,
+    Exposure,
+    Outcome,
+    Moderator,
+    EffectSize
+} from './models';
 
 export type ReviewViewModel = {
-    review_id: string,
+    id: string,
     extractor_name: string,
     extraction_date: string,
     first_author: string,
@@ -38,7 +45,7 @@ export type ReviewViewModel = {
 
 export function blankReviewViewModel(): ReviewViewModel {
     return {
-        review_id: uuid(),
+        id: uuid(),
         extractor_name: '',
         extraction_date: '',
         first_author: '',
@@ -69,19 +76,70 @@ export function blankReviewViewModel(): ReviewViewModel {
     };
 }
 
+export function reviewVMToModel(vm: ReviewViewModel): Review {
+    return {
+        id: vm.id,
+        extractor_name: vm.extractor_name,
+        extraction_date: vm.extraction_date,
+        first_author: vm.first_author,
+        year_of_publication: parseInt(vm.year_of_publication),
+        search_strategy_desc: vm.search_strategy_desc,
+        sample_age_desc: vm.sample_age_desc,
+        sample_age_lowest_mean: parseFloat(vm.sample_age_lowest_mean),
+        sample_age_highest_mean: parseFloat(vm.sample_age_highest_mean),
+        are_you_sure: vm.are_you_sure,
+        inclusion_exclusion_concerns: vm.inclusion_exclusion_concerns,
+        earliest_publication_year: parseInt(vm.earliest_publication_year),
+        latest_publication_year: parseInt(vm.latest_publication_year),
+        number_of_studies: parseInt(vm.number_of_studies),
+        number_of_samples: parseInt(vm.number_of_samples),
+        rating_of_low_risk_bias: parseFloat(vm.rating_of_low_risk_bias),
+        rating_of_moderate_risk_bias: parseFloat(vm.rating_of_moderate_risk_bias),
+        rating_of_high_risk_bias: parseFloat(vm.rating_of_high_risk_bias),
+        bias_rating_system: vm.bias_rating_system,
+        bias_rating_system_reference: vm.bias_rating_system_reference,
+        level_of_evidence_judgement_1: vm.level_of_evidence_judgement_1,
+        level_of_evidence_judgement_2: vm.level_of_evidence_judgement_2,
+        level_of_evidence_judgement_3: vm.level_of_evidence_judgement_3,
+        amstar_2: vm.amstar_2,
+        exposures: vm.exposures.map(exposureVMToModel),
+        outcomes: vm.outcomes.map(outcomeVMToModel),
+        moderators: vm.moderators.map(moderatorVMToModel),
+        effect_sizes: vm.effect_sizes.map(effectSizeVMToModel),
+    };
+}
+
+export type ReviewViewProps = {
+    review: ReviewViewModel,
+    update: (ReviewViewModel) => void,
+    onSave: () => void,
+};
+
+export function ReviewEditView({review, update, onSave}: ReviewViewProps) {
+    return (
+        <div className="review-edit-view">
+            <ReviewView
+                model={review}
+                update={update}
+            />
+            <SaveButton onClick={onSave}>{labels.button_save}</SaveButton>
+        </div>
+    );
+}
+
 type ReviewProps = {
     model: ReviewViewModel,
     update: (ReviewViewModel) => void
 };
 
-export function Review(props: ReviewProps) {
+function ReviewView(props: ReviewProps) {
     return (
         <div>
-            <ReviewDetails
+            <ReviewDetailsView
                 model={props.model}
                 update={props.update}
             />
-            <Exposures
+            <ExposuresView
                 model={props.model.exposures}
                 update={val =>
                     props.update({
@@ -90,7 +148,7 @@ export function Review(props: ReviewProps) {
                     })
                 }
             />
-            <Outcomes
+            <OutcomesView
                 model={props.model.outcomes}
                 update={val =>
                     props.update({
@@ -99,7 +157,7 @@ export function Review(props: ReviewProps) {
                     })
                 }
             />
-            <Moderators
+            <ModeratorsView
                 model={props.model.moderators}
                 update={val =>
                     props.update({
@@ -108,7 +166,7 @@ export function Review(props: ReviewProps) {
                     })
                 }
             />
-            <EffectSizes
+            <EffectSizesView
                 model={props.model}
                 update={val =>
                     props.update({
@@ -126,7 +184,7 @@ type SectionProps<ViewModelType> = {
     update: (ViewModelType) => void,
 };
 
-function ReviewDetails(props: SectionProps<ReviewViewModel>) {
+function ReviewDetailsView(props: SectionProps<ReviewViewModel>) {
     function inputProps(field) {
         return {
             label: labels['label_review_' + field],
@@ -145,7 +203,6 @@ function ReviewDetails(props: SectionProps<ReviewViewModel>) {
             <h3>{labels.heading_extraction_info}</h3>
             <Input {...inputProps('extractor_name')} />
             <Input {...inputProps('extraction_date')} />
-            <h3>{labels.heading_review_id}</h3>
             <Input {...inputProps('first_author')} />
             <Input {...inputProps('year_of_publication')} />
             <Input {...inputProps('search_strategy_desc')} />
@@ -158,14 +215,11 @@ function ReviewDetails(props: SectionProps<ReviewViewModel>) {
             <Input {...inputProps('latest_publication_year')} />
             <Input {...inputProps('number_of_studies')} />
             <Input {...inputProps('number_of_samples')} />
-            <h3>{labels.heading_risk_of_bias}</h3>
-            <h4>{labels.subheading_review_risk_of_bias}</h4>
             <Input {...inputProps('rating_of_low_risk_bias')} />
             <Input {...inputProps('rating_of_moderate_risk_bias')} />
             <Input {...inputProps('rating_of_high_risk_bias')} />
             <Input {...inputProps('bias_rating_system')} />
             <Input {...inputProps('bias_rating_system_reference')} />
-            <h3>{labels.heading_teams_level_of_evidence_judgement}</h3>
             <Input {...inputProps('level_of_evidence_judgement_1')} />
             <Input {...inputProps('level_of_evidence_judgement_2')} />
             <Input {...inputProps('level_of_evidence_judgement_3')} />
@@ -188,7 +242,7 @@ type ExposureViewModel = {
     social_environment_general: string,
 };
 
-export function blankExposureViewModel(): ExposureViewModel {
+function blankExposureViewModel(): ExposureViewModel {
     return {
         exposure_id: uuid(),
         content_specifics: '',
@@ -205,7 +259,24 @@ export function blankExposureViewModel(): ExposureViewModel {
     };
 }
 
-function Exposures(props: SectionProps<ExposureViewModel[]>) {
+function exposureVMToModel(vm: ExposureViewModel): Exposure {
+    return {
+        id: vm.exposure_id,
+        content_specifics: vm.content_specifics,
+        content_category: vm.content_category,
+        measure: vm.measure,
+        measure_type: vm.measure_type,
+        device_type: vm.device_type,
+        device_category: vm.device_category,
+        device_portability: vm.device_portability,
+        setting: vm.setting,
+        setting_category: vm.setting_category,
+        social_environment_specific: vm.social_environment_specific,
+        social_environment_general: vm.social_environment_general,
+    };
+}
+
+function ExposuresView(props: SectionProps<ExposureViewModel[]>) {
     function update(model: ExposureViewModel, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
@@ -226,7 +297,7 @@ function Exposures(props: SectionProps<ExposureViewModel[]>) {
     return (
         <section>
             {props.model.map((exposure, i) =>
-                <Exposure
+                <ExposureView
                     key={i}
                     idx={i}
                     model={exposure}
@@ -248,7 +319,7 @@ type SubItemProps<ViewModelType> = {
     idx: number,
 };
 
-function Exposure(props: SubItemProps<ExposureViewModel>) {
+function ExposureView(props: SubItemProps<ExposureViewModel>) {
     function inputProps(field) {
         return {
             label: labels['label_exposure_' + field],
@@ -292,7 +363,7 @@ type OutcomeViewModel = {
     category: string
 };
 
-export function blankOutcomeViewModel(): OutcomeViewModel {
+function blankOutcomeViewModel(): OutcomeViewModel {
     return {
         outcome_id: uuid(),
         measure: '',
@@ -303,8 +374,18 @@ export function blankOutcomeViewModel(): OutcomeViewModel {
     };
 }
 
+function outcomeVMToModel(vm: OutcomeViewModel): Outcome {
+    return {
+        id: vm.outcome_id,
+        measure: vm.measure,
+        measure_type: vm.measure_type,
+        specific_variable: vm.specific_variable,
+        higher_order_variable: vm.higher_order_variable,
+        category: vm.category,
+    };
+}
 
-function Outcomes(props: SectionProps<OutcomeViewModel[]>) {
+function OutcomesView(props: SectionProps<OutcomeViewModel[]>) {
     function update(model: OutcomeViewModel, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
@@ -325,7 +406,7 @@ function Outcomes(props: SectionProps<OutcomeViewModel[]>) {
     return (
         <section>
             {props.model.map((model, i) =>
-                <Outcome
+                <OutcomeView
                     key={i}
                     idx={i}
                     model={model}
@@ -340,7 +421,7 @@ function Outcomes(props: SectionProps<OutcomeViewModel[]>) {
     );
 }
 
-function Outcome(props: SubItemProps<OutcomeViewModel>) {
+function OutcomeView(props: SubItemProps<OutcomeViewModel>) {
     function inputProps(field) {
         return {
             label: labels['label_outcome_' + field],
@@ -375,7 +456,7 @@ type ModeratorViewModel = {
     category: string,
 };
 
-export function blankModeratorViewModel(): ModeratorViewModel {
+function blankModeratorViewModel(): ModeratorViewModel {
     return {
         moderator_id: uuid(),
         level: '',
@@ -383,7 +464,15 @@ export function blankModeratorViewModel(): ModeratorViewModel {
     };
 }
 
-function Moderators(props: SectionProps<ModeratorViewModel[]>) {
+function moderatorVMToModel(vm: ModeratorViewModel): Moderator {
+    return {
+        id: vm.moderator_id,
+        level: vm.level,
+        category: vm.category,
+    };
+}
+
+function ModeratorsView(props: SectionProps<ModeratorViewModel[]>) {
     function update(model: ModeratorViewModel, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
@@ -404,7 +493,7 @@ function Moderators(props: SectionProps<ModeratorViewModel[]>) {
     return (
         <section>
             {props.model.map((model, i) =>
-                <Moderator
+                <ModeratorView
                     key={i}
                     idx={i}
                     model={model}
@@ -419,7 +508,7 @@ function Moderators(props: SectionProps<ModeratorViewModel[]>) {
     );
 }
 
-function Moderator(props: SubItemProps<ModeratorViewModel>) {
+function ModeratorView(props: SubItemProps<ModeratorViewModel>) {
     function inputProps(field) {
         return {
             label: labels['label_moderator_' + field],
@@ -449,6 +538,7 @@ type EffectSizeViewModel = {
     exposure_id: string,
     outcome_id: string,
     moderator_id: string,
+    display_name: string,
     team_narrative_summary: string,
     value: string,
     value_lower_bound: string,
@@ -458,15 +548,17 @@ type EffectSizeViewModel = {
     comments: string,
 };
 
-export function blankEffectSizeViewModel(
+function blankEffectSizeViewModel(
     exposureId: string,
     outcomeId: string,
-    moderatorId: string
+    moderatorId: string,
+    displayName: string
 ): EffectSizeViewModel {
     return {
         exposure_id: exposureId,
         outcome_id: outcomeId,
         moderator_id: moderatorId,
+        display_name: displayName,
         team_narrative_summary: '',
         value: '',
         value_lower_bound: '',
@@ -477,12 +569,27 @@ export function blankEffectSizeViewModel(
     };
 }
 
+function effectSizeVMToModel(vm: EffectSizeViewModel): EffectSize {
+    return {
+        exposure_id: vm.exposure_id,
+        outcome_id: vm.outcome_id,
+        moderator_id: vm.moderator_id,
+        team_narrative_summary: vm.team_narrative_summary,
+        value: parseFloat(vm.value),
+        value_lower_bound: parseFloat(vm.value_lower_bound),
+        value_upper_bound: parseFloat(vm.value_upper_bound),
+        p_value: parseFloat(vm.p_value),
+        statistical_test: vm.statistical_test,
+        comments: vm.comments,
+    };
+}
+
 type EffectSizesProps = {
     model: ReviewViewModel,
     update: EffectSizeViewModel[] => void,
 };
 
-function EffectSizes(props: EffectSizesProps) {
+function EffectSizesView(props: EffectSizesProps) {
     const review = props.model;
     const effectSizesMap = delimIndexBy(
         review.effect_sizes,
@@ -493,7 +600,7 @@ function EffectSizes(props: EffectSizesProps) {
     review.exposures.forEach(exposure => {
         review.outcomes.forEach(outcome => {
             review.moderators.forEach(moderator => {
-                const key  = [
+                const key = [
                     exposure.exposure_id,
                     outcome.outcome_id,
                     moderator.moderator_id,
@@ -504,7 +611,8 @@ function EffectSizes(props: EffectSizesProps) {
                     effectSizes.push(blankEffectSizeViewModel(
                         exposure.exposure_id,
                         outcome.outcome_id,
-                        moderator.moderator_id
+                        moderator.moderator_id,
+                        effectSizeDisplayName(exposure, outcome, moderator)
                     ));
                 }
             });
@@ -514,7 +622,7 @@ function EffectSizes(props: EffectSizesProps) {
     return (
         <section>
             {effectSizes.map((effectSize, idx) =>
-                <EffectSize
+                <EffectSizeView
                     key={idx}
                     idx={idx}
                     model={effectSize}
@@ -525,13 +633,23 @@ function EffectSizes(props: EffectSizesProps) {
     );
 }
 
+function effectSizeDisplayName(
+    exposure: ExposureViewModel,
+    outcome: OutcomeViewModel,
+    moderator: ModeratorViewModel
+): string {
+    return exposure.content_specifics + ' ' +
+        outcome.specific_variable + ' ' +
+        moderator.level;
+}
+
 type EffectSizeProps = {
-    model: EffectSize,
-    update: EffectSize => void,
+    model: EffectSizeViewModel,
+    update: EffectSizeViewModel => void,
     idx: number,
 };
 
-function EffectSize(props: EffectSizeProps) {
+function EffectSizeView(props: EffectSizeProps) {
     function inputProps(field) {
         return {
             label: labels['label_effect_size_' + field],
@@ -547,7 +665,8 @@ function EffectSize(props: EffectSizeProps) {
 
     return (
         <section>
-            <h3>{labels.heading_benefit_and_risk_analysis}</h3>
+            <h3>{labels.heading_effect_size}</h3>
+            <h4>{props.model.display_name}</h4>
             <Input {...inputProps('team_narrative_summary')} />
             <Input {...inputProps('value')} />
             <Input {...inputProps('value_lower_bound')} />
@@ -560,11 +679,11 @@ function EffectSize(props: EffectSizeProps) {
 }
 
 function AddButton(props) {
-    return <button onClick={props.onClick}>{props.children}</button>;
+    return <button className="btn btn-secondary" onClick={props.onClick}>{props.children}</button>;
 }
 
 function RemoveButton(props) {
-    return <button onClick={props.onClick}>{props.children}</button>;
+    return <button className="btn btn-danger" onClick={props.onClick}>{props.children}</button>;
 }
 
 function Input({label, value, update}) {
@@ -574,8 +693,8 @@ function Input({label, value, update}) {
     return (
         <div>
             <label>
-                {label}
-                <input value={value} onChange={onChange}/>
+                <div>{label}</div>
+                <input className="long-input" value={value} onChange={onChange}/>
             </label>
         </div>
     );
@@ -594,3 +713,8 @@ function Checkbox({label, value, update}) {
         </div>
     );
 }
+
+function SaveButton(props) {
+    return <button className="btn btn-primary" {...props}>{props.children}</button>;
+}
+
