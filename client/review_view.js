@@ -596,7 +596,7 @@ function EffectSizesView(props: EffectSizesProps) {
         ['exposure_id', 'outcome_id', 'moderator_id'],
         ':'
     );
-    const effectSizes = [];
+    const visibleEffectSizes = [];
     review.exposures.forEach(exposure => {
         review.outcomes.forEach(outcome => {
             review.moderators.forEach(moderator => {
@@ -606,9 +606,9 @@ function EffectSizesView(props: EffectSizesProps) {
                     moderator.moderator_id,
                 ].join(':');
                 if (effectSizesMap[key]) {
-                    effectSizes.push(effectSizesMap[key]);
+                    visibleEffectSizes.push(effectSizesMap[key]);
                 } else {
-                    effectSizes.push(blankEffectSizeViewModel(
+                    visibleEffectSizes.push(blankEffectSizeViewModel(
                         exposure.exposure_id,
                         outcome.outcome_id,
                         moderator.moderator_id,
@@ -618,15 +618,31 @@ function EffectSizesView(props: EffectSizesProps) {
             });
         });
     });
+    function update(model: EffectSizeViewModel) {
+        const effectSizes = review.effect_sizes.slice();
+        for (let i = 0; i < review.effect_sizes.length; i++) {
+            const effectSize = review.effect_sizes[i];
+            if (
+                effectSize.exposure_id === model.exposure_id &&
+                effectSize.outcome_id === model.outcome_id &&
+                effectSize.moderator_id === model.moderator_id
+            ) {
+                effectSizes[i] = model;
+                props.update(effectSizes);
+                return;
+            }
+        }
+        effectSizes.push(model);
+        props.update(effectSizes);
+    }
 
     return (
         <section>
-            {effectSizes.map((effectSize, idx) =>
+            {visibleEffectSizes.map((effectSize, idx) =>
                 <EffectSizeView
                     key={idx}
-                    idx={idx}
                     model={effectSize}
-                    update={()=>{}}
+                    update={update}
                 />
             )}
         </section>
@@ -645,8 +661,7 @@ function effectSizeDisplayName(
 
 type EffectSizeProps = {
     model: EffectSizeViewModel,
-    update: EffectSizeViewModel => void,
-    idx: number,
+    update: EffectSizeViewModel => void
 };
 
 function EffectSizeView(props: EffectSizeProps) {
@@ -658,7 +673,7 @@ function EffectSizeView(props: EffectSizeProps) {
                 props.update({
                     ...props.model,
                     [field]: val
-                }, props.idx);
+                });
             },
         };
     }

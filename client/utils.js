@@ -16,17 +16,18 @@ export function nestedIndexBy(arr: Array<Object>, fields: Array<string>) {
     return map;
 }
 
-export function delimIndexBy<T>(
+export function delimIndexBy<T:Object>(
     arr: Array<T>,
     fields: Array<string>,
     delim: string = ':'
 ): {[string]: T} {
     const map = {};
     for (let i = 0; i < arr.length; i++) {
-        let key = fields[0];
+        const elem = arr[i];
+        let key = elem[fields[0]];
         for (let j = 1; j < fields.length; j++) {
             const field = fields[j];
-            key += delim + field;
+            key += delim + elem[field];
         }
         map[key] = arr[i];
     }

@@ -7,7 +7,7 @@ module.exports = {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'server/static')
     },
-    //devtool: 'eval-cheap-module-source-map',
+    devtool: 'eval-cheap-module-source-map',
     module: {
         rules: [
             {
@@ -30,7 +30,7 @@ module.exports = {
         ],
     },
     plugins: [
-        new UglifyJsPlugin()
+        //new UglifyJsPlugin()
     ]
 };
 
