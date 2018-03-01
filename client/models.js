@@ -1,24 +1,26 @@
 // @flow
 
+import uuid from './vendor/uuid';
+
 export type Review = {
     id: string,
     extractor_name: string,
     extraction_date: string,
     first_author: string,
-    year_of_publication: number | null,
+    year_of_publication: string,
     search_strategy_desc: string,
     sample_age_desc: string,
-    sample_age_lowest_mean: number | null,
-    sample_age_highest_mean: number | null,
+    sample_age_lowest_mean: string,
+    sample_age_highest_mean: string,
     are_you_sure: boolean,
     inclusion_exclusion_concerns: string,
-    earliest_publication_year: number | null,
-    latest_publication_year: number | null,
-    number_of_studies: number | null,
-    number_of_samples: number | null,
-    rating_of_low_risk_bias: number | null,
-    rating_of_moderate_risk_bias: number | null,
-    rating_of_high_risk_bias: number | null,
+    earliest_publication_year: string,
+    latest_publication_year: string,
+    number_of_studies: string,
+    number_of_samples: string,
+    rating_of_low_risk_bias: string,
+    rating_of_moderate_risk_bias: string,
+    rating_of_high_risk_bias: string,
     bias_rating_system: string,
     bias_rating_system_reference: string,
     level_of_evidence_judgement_1: string,
@@ -66,10 +68,98 @@ export type EffectSize = {
     outcome_id: string,
     moderator_id: string,
     team_narrative_summary: string,
-    value: number | null,
-    value_lower_bound: number | null,
-    value_upper_bound: number | null,
-    p_value: number | null,
+    value: string,
+    value_lower_bound: string,
+    value_upper_bound: string,
+    p_value: string,
     statistical_test: string,
     comments: string,
 };
+
+export function blankReview(): Review {
+    return {
+        id: uuid(),
+        extractor_name: '',
+        extraction_date: '',
+        first_author: '',
+        year_of_publication: '',
+        search_strategy_desc: '',
+        sample_age_desc: '',
+        sample_age_lowest_mean: '',
+        sample_age_highest_mean: '',
+        are_you_sure: false,
+        inclusion_exclusion_concerns: '',
+        earliest_publication_year: '',
+        latest_publication_year: '',
+        number_of_studies: '',
+        number_of_samples: '',
+        rating_of_low_risk_bias: '',
+        rating_of_moderate_risk_bias: '',
+        rating_of_high_risk_bias: '',
+        bias_rating_system: '',
+        bias_rating_system_reference: '',
+        level_of_evidence_judgement_1: '',
+        level_of_evidence_judgement_2: '',
+        level_of_evidence_judgement_3: '',
+        amstar_2: [],
+        exposures: [],
+        outcomes: [],
+        moderators: [],
+        effect_sizes: [],
+    };
+}
+
+export function blankExposure(): Exposure {
+    return {
+        id: uuid(),
+        content_specifics: '',
+        content_category: '',
+        measure: '',
+        measure_type: '',
+        device_type: '',
+        device_category: '',
+        device_portability: '',
+        setting: '',
+        setting_category: '',
+        social_environment_specific: '',
+        social_environment_general: '',
+    };
+}
+
+export function blankOutcome(): Outcome {
+    return {
+        id: uuid(),
+        measure: '',
+        measure_type: '',
+        specific_variable: '',
+        higher_order_variable: '',
+        category: '',
+    };
+}
+
+export function blankModerator(): Moderator {
+    return {
+        id: uuid(),
+        level: '',
+        category: '',
+    };
+}
+
+export function blankEffectSize(
+    exposureId: string,
+    outcomeId: string,
+    moderatorId: string
+): EffectSize{
+    return {
+        exposure_id: exposureId,
+        outcome_id: outcomeId,
+        moderator_id: moderatorId,
+        team_narrative_summary: '',
+        value: '',
+        value_lower_bound: '',
+        value_upper_bound: '',
+        p_value: '',
+        statistical_test: '',
+        comments: '',
+    };
+}

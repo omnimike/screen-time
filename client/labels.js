@@ -1,5 +1,10 @@
 
 export default {
+    table_heading_extractor_name: 'Extractor',
+    table_heading_extraction_date: 'Date',
+    table_heading_first_author: 'Author',
+    table_heading_year_of_publication: 'Year',
+
     heading_review: 'Review',
     heading_extraction_info: 'Extraction Info',
     heading_review_id: 'Review Identification',

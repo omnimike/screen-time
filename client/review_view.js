@@ -2,7 +2,6 @@
 
 import React from 'react';
 import labels from './labels';
-import uuid from './vendor/uuid';
 import { delimIndexBy } from './utils';
 import type {
     Review,
@@ -11,170 +10,115 @@ import type {
     Moderator,
     EffectSize
 } from './models';
+import {
+    blankReview,
+    blankExposure,
+    blankOutcome,
+    blankModerator,
+    blankEffectSize
+} from './models';
 
-export type ReviewViewModel = {
-    id: string,
-    extractor_name: string,
-    extraction_date: string,
-    first_author: string,
-    year_of_publication: string,
-    search_strategy_desc: string,
-    sample_age_desc: string,
-    sample_age_lowest_mean: string,
-    sample_age_highest_mean: string,
-    are_you_sure: boolean,
-    inclusion_exclusion_concerns: string,
-    earliest_publication_year: string,
-    latest_publication_year: string,
-    number_of_studies: string,
-    number_of_samples: string,
-    rating_of_low_risk_bias: string,
-    rating_of_moderate_risk_bias: string,
-    rating_of_high_risk_bias: string,
-    bias_rating_system: string,
-    bias_rating_system_reference: string,
-    level_of_evidence_judgement_1: string,
-    level_of_evidence_judgement_2: string,
-    level_of_evidence_judgement_3: string,
-    amstar_2: Array<string>,
-    exposures: Array<ExposureViewModel>,
-    outcomes: Array<OutcomeViewModel>,
-    moderators: Array<ModeratorViewModel>,
-    effect_sizes: Array<EffectSizeViewModel>,
+type ReviewEditViewProps = {
+    model: Review | null,
+    onSave: Review => void
 };
 
-export function blankReviewViewModel(): ReviewViewModel {
-    return {
-        id: uuid(),
-        extractor_name: '',
-        extraction_date: '',
-        first_author: '',
-        year_of_publication: '',
-        search_strategy_desc: '',
-        sample_age_desc: '',
-        sample_age_lowest_mean: '',
-        sample_age_highest_mean: '',
-        are_you_sure: false,
-        inclusion_exclusion_concerns: '',
-        earliest_publication_year: '',
-        latest_publication_year: '',
-        number_of_studies: '',
-        number_of_samples: '',
-        rating_of_low_risk_bias: '',
-        rating_of_moderate_risk_bias: '',
-        rating_of_high_risk_bias: '',
-        bias_rating_system: '',
-        bias_rating_system_reference: '',
-        level_of_evidence_judgement_1: '',
-        level_of_evidence_judgement_2: '',
-        level_of_evidence_judgement_3: '',
-        amstar_2: [],
-        exposures: [],
-        outcomes: [],
-        moderators: [],
-        effect_sizes: [],
-    };
-}
-
-export function reviewVMToModel(vm: ReviewViewModel): Review {
-    return {
-        id: vm.id,
-        extractor_name: vm.extractor_name,
-        extraction_date: vm.extraction_date,
-        first_author: vm.first_author,
-        year_of_publication: parseInt(vm.year_of_publication),
-        search_strategy_desc: vm.search_strategy_desc,
-        sample_age_desc: vm.sample_age_desc,
-        sample_age_lowest_mean: parseFloat(vm.sample_age_lowest_mean),
-        sample_age_highest_mean: parseFloat(vm.sample_age_highest_mean),
-        are_you_sure: vm.are_you_sure,
-        inclusion_exclusion_concerns: vm.inclusion_exclusion_concerns,
-        earliest_publication_year: parseInt(vm.earliest_publication_year),
-        latest_publication_year: parseInt(vm.latest_publication_year),
-        number_of_studies: parseInt(vm.number_of_studies),
-        number_of_samples: parseInt(vm.number_of_samples),
-        rating_of_low_risk_bias: parseFloat(vm.rating_of_low_risk_bias),
-        rating_of_moderate_risk_bias: parseFloat(vm.rating_of_moderate_risk_bias),
-        rating_of_high_risk_bias: parseFloat(vm.rating_of_high_risk_bias),
-        bias_rating_system: vm.bias_rating_system,
-        bias_rating_system_reference: vm.bias_rating_system_reference,
-        level_of_evidence_judgement_1: vm.level_of_evidence_judgement_1,
-        level_of_evidence_judgement_2: vm.level_of_evidence_judgement_2,
-        level_of_evidence_judgement_3: vm.level_of_evidence_judgement_3,
-        amstar_2: vm.amstar_2,
-        exposures: vm.exposures.map(exposureVMToModel),
-        outcomes: vm.outcomes.map(outcomeVMToModel),
-        moderators: vm.moderators.map(moderatorVMToModel),
-        effect_sizes: vm.effect_sizes.map(effectSizeVMToModel),
-    };
-}
-
-export type ReviewViewProps = {
-    review: ReviewViewModel,
-    update: (ReviewViewModel) => void,
-    onSave: () => void,
+type ReviewEditViewState = {
+    model: Review,
+    message: null | {type: 'success' | 'error', text: string}
 };
 
-export function ReviewEditView({review, update, onSave}: ReviewViewProps) {
+export class ReviewEditView extends React.Component<
+    void,
+    ReviewEditViewProps,
+    ReviewEditViewState
+> {
+    state: ReviewEditViewState;
+
+    constructor(props: {model: Review, update: (Review) => void}) {
+        super(props);
+        this.state = {
+            model: props.model || blankReview(),
+            message: null
+        };
+        this.update.bind(this);
+        this.onSave.bind(this);
+    }
+
+    update(model: Review) {
+        this.setState({...this.state, model});
+    }
+
+    onSave() {
+        this.props.onSave(this.state.model);
+    }
+
+    render() {
+        const model = this.state.model;
+        return (
+            <div className="review-edit-view">
+                <AlertView message={this.state.message} />
+                <ReviewDetailsView
+                    model={model}
+                    update={this.update}
+                />
+                <ExposuresView
+                    model={model.exposures}
+                    update={val =>
+                        this.update({
+                            ...model,
+                            exposures: val,
+                        })
+                    }
+                />
+                <OutcomesView
+                    model={model.outcomes}
+                    update={val =>
+                        this.update({
+                            ...model,
+                            outcomes: val,
+                        })
+                    }
+                />
+                <ModeratorsView
+                    model={model.moderators}
+                    update={val =>
+                        this.update({
+                            ...model,
+                            moderators: val,
+                        })
+                    }
+                />
+                <EffectSizesView
+                    model={model}
+                    update={val =>
+                        this.update({
+                            ...model,
+                            effect_sizes: val,
+                        })
+                    }
+                />
+                <SaveButton onClick={this.onSave}>{labels.button_save}</SaveButton>
+            </div>
+        );
+    }
+}
+
+
+function AlertView({message}) {
+    let cls = 'd-none';
+    let text = '';
+    if (message) {
+        if (message.type === 'success') {
+            cls = 'alert-success';
+        } else if (message.type === 'error') {
+            cls = 'alert-danger';
+        }
+        text = message.text;
+    }
     return (
-        <div className="review-edit-view">
-            <ReviewView
-                model={review}
-                update={update}
-            />
-            <SaveButton onClick={onSave}>{labels.button_save}</SaveButton>
-        </div>
-    );
-}
-
-type ReviewProps = {
-    model: ReviewViewModel,
-    update: (ReviewViewModel) => void
-};
-
-function ReviewView(props: ReviewProps) {
-    return (
-        <div>
-            <ReviewDetailsView
-                model={props.model}
-                update={props.update}
-            />
-            <ExposuresView
-                model={props.model.exposures}
-                update={val =>
-                    props.update({
-                        ...props.model,
-                        exposures: val,
-                    })
-                }
-            />
-            <OutcomesView
-                model={props.model.outcomes}
-                update={val =>
-                    props.update({
-                        ...props.model,
-                        outcomes: val,
-                    })
-                }
-            />
-            <ModeratorsView
-                model={props.model.moderators}
-                update={val =>
-                    props.update({
-                        ...props.model,
-                        moderators: val,
-                    })
-                }
-            />
-            <EffectSizesView
-                model={props.model}
-                update={val =>
-                    props.update({
-                        ...props.model,
-                        effect_sizes: val,
-                    })
-                }
-            />
+        <div className={`alert ${cls}`} role="alert">
+            {text}
         </div>
     );
 }
@@ -184,7 +128,14 @@ type SectionProps<ViewModelType> = {
     update: (ViewModelType) => void,
 };
 
-function ReviewDetailsView(props: SectionProps<ReviewViewModel>) {
+type SubItemProps<ViewModelType> = {
+    model: ViewModelType,
+    update: (ViewModelType, number) => void,
+    remove: () => void,
+    idx: number,
+};
+
+function ReviewDetailsView(props: SectionProps<Review>) {
     function inputProps(field) {
         return {
             label: labels['label_review_' + field],
@@ -227,64 +178,15 @@ function ReviewDetailsView(props: SectionProps<ReviewViewModel>) {
     );
 }
 
-type ExposureViewModel = {
-    exposure_id: string,
-    content_specifics: string,
-    content_category: string,
-    measure: string,
-    measure_type: string,
-    device_type: string,
-    device_category: string,
-    device_portability: string,
-    setting: string,
-    setting_category: string,
-    social_environment_specific: string,
-    social_environment_general: string,
-};
-
-function blankExposureViewModel(): ExposureViewModel {
-    return {
-        exposure_id: uuid(),
-        content_specifics: '',
-        content_category: '',
-        measure: '',
-        measure_type: '',
-        device_type: '',
-        device_category: '',
-        device_portability: '',
-        setting: '',
-        setting_category: '',
-        social_environment_specific: '',
-        social_environment_general: '',
-    };
-}
-
-function exposureVMToModel(vm: ExposureViewModel): Exposure {
-    return {
-        id: vm.exposure_id,
-        content_specifics: vm.content_specifics,
-        content_category: vm.content_category,
-        measure: vm.measure,
-        measure_type: vm.measure_type,
-        device_type: vm.device_type,
-        device_category: vm.device_category,
-        device_portability: vm.device_portability,
-        setting: vm.setting,
-        setting_category: vm.setting_category,
-        social_environment_specific: vm.social_environment_specific,
-        social_environment_general: vm.social_environment_general,
-    };
-}
-
-function ExposuresView(props: SectionProps<ExposureViewModel[]>) {
-    function update(model: ExposureViewModel, i: number) {
+function ExposuresView(props: SectionProps<Exposure[]>) {
+    function update(model: Exposure, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
         props.update(newArr);
     }
     function create() {
         const newArr = props.model.slice();
-        newArr.push(blankExposureViewModel());
+        newArr.push(blankExposure());
         props.update(newArr);
     }
     function removeExposure(idx: number) {
@@ -312,14 +214,7 @@ function ExposuresView(props: SectionProps<ExposureViewModel[]>) {
     );
 }
 
-type SubItemProps<ViewModelType> = {
-    model: ViewModelType,
-    update: (ViewModelType, number) => void,
-    remove: () => void,
-    idx: number,
-};
-
-function ExposureView(props: SubItemProps<ExposureViewModel>) {
+function ExposureView(props: SubItemProps<Exposure>) {
     function inputProps(field) {
         return {
             label: labels['label_exposure_' + field],
@@ -354,46 +249,15 @@ function ExposureView(props: SubItemProps<ExposureViewModel>) {
     );
 }
 
-type OutcomeViewModel = {
-    outcome_id: string,
-    measure: string,
-    measure_type: string,
-    specific_variable: string,
-    higher_order_variable: string,
-    category: string
-};
-
-function blankOutcomeViewModel(): OutcomeViewModel {
-    return {
-        outcome_id: uuid(),
-        measure: '',
-        measure_type: '',
-        specific_variable: '',
-        higher_order_variable: '',
-        category: '',
-    };
-}
-
-function outcomeVMToModel(vm: OutcomeViewModel): Outcome {
-    return {
-        id: vm.outcome_id,
-        measure: vm.measure,
-        measure_type: vm.measure_type,
-        specific_variable: vm.specific_variable,
-        higher_order_variable: vm.higher_order_variable,
-        category: vm.category,
-    };
-}
-
-function OutcomesView(props: SectionProps<OutcomeViewModel[]>) {
-    function update(model: OutcomeViewModel, i: number) {
+function OutcomesView(props: SectionProps<Outcome[]>) {
+    function update(model: Outcome, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
         props.update(newArr);
     }
     function create() {
         const newArr = props.model.slice();
-        newArr.push(blankOutcomeViewModel());
+        newArr.push(blankOutcome());
         props.update(newArr);
     }
     function remove(idx: number) {
@@ -421,7 +285,7 @@ function OutcomesView(props: SectionProps<OutcomeViewModel[]>) {
     );
 }
 
-function OutcomeView(props: SubItemProps<OutcomeViewModel>) {
+function OutcomeView(props: SubItemProps<Outcome>) {
     function inputProps(field) {
         return {
             label: labels['label_outcome_' + field],
@@ -450,37 +314,15 @@ function OutcomeView(props: SubItemProps<OutcomeViewModel>) {
     );
 }
 
-type ModeratorViewModel = {
-    moderator_id: string,
-    level: string,
-    category: string,
-};
-
-function blankModeratorViewModel(): ModeratorViewModel {
-    return {
-        moderator_id: uuid(),
-        level: '',
-        category: '',
-    };
-}
-
-function moderatorVMToModel(vm: ModeratorViewModel): Moderator {
-    return {
-        id: vm.moderator_id,
-        level: vm.level,
-        category: vm.category,
-    };
-}
-
-function ModeratorsView(props: SectionProps<ModeratorViewModel[]>) {
-    function update(model: ModeratorViewModel, i: number) {
+function ModeratorsView(props: SectionProps<Moderator[]>) {
+    function update(model: Moderator, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
         props.update(newArr);
     }
     function create() {
         const newArr = props.model.slice();
-        newArr.push(blankModeratorViewModel());
+        newArr.push(blankModerator());
         props.update(newArr);
     }
     function remove(idx: number) {
@@ -508,7 +350,7 @@ function ModeratorsView(props: SectionProps<ModeratorViewModel[]>) {
     );
 }
 
-function ModeratorView(props: SubItemProps<ModeratorViewModel>) {
+function ModeratorView(props: SubItemProps<Moderator>) {
     function inputProps(field) {
         return {
             label: labels['label_moderator_' + field],
@@ -534,59 +376,9 @@ function ModeratorView(props: SubItemProps<ModeratorViewModel>) {
     );
 }
 
-type EffectSizeViewModel = {
-    exposure_id: string,
-    outcome_id: string,
-    moderator_id: string,
-    display_name: string,
-    team_narrative_summary: string,
-    value: string,
-    value_lower_bound: string,
-    value_upper_bound: string,
-    p_value: string,
-    statistical_test: string,
-    comments: string,
-};
-
-function blankEffectSizeViewModel(
-    exposureId: string,
-    outcomeId: string,
-    moderatorId: string,
-    displayName: string
-): EffectSizeViewModel {
-    return {
-        exposure_id: exposureId,
-        outcome_id: outcomeId,
-        moderator_id: moderatorId,
-        display_name: displayName,
-        team_narrative_summary: '',
-        value: '',
-        value_lower_bound: '',
-        value_upper_bound: '',
-        p_value: '',
-        statistical_test: '',
-        comments: '',
-    };
-}
-
-function effectSizeVMToModel(vm: EffectSizeViewModel): EffectSize {
-    return {
-        exposure_id: vm.exposure_id,
-        outcome_id: vm.outcome_id,
-        moderator_id: vm.moderator_id,
-        team_narrative_summary: vm.team_narrative_summary,
-        value: parseFloat(vm.value),
-        value_lower_bound: parseFloat(vm.value_lower_bound),
-        value_upper_bound: parseFloat(vm.value_upper_bound),
-        p_value: parseFloat(vm.p_value),
-        statistical_test: vm.statistical_test,
-        comments: vm.comments,
-    };
-}
-
 type EffectSizesProps = {
-    model: ReviewViewModel,
-    update: EffectSizeViewModel[] => void,
+    model: Review,
+    update: EffectSize[] => void,
 };
 
 function EffectSizesView(props: EffectSizesProps) {
@@ -601,24 +393,24 @@ function EffectSizesView(props: EffectSizesProps) {
         review.outcomes.forEach(outcome => {
             review.moderators.forEach(moderator => {
                 const key = [
-                    exposure.exposure_id,
-                    outcome.outcome_id,
-                    moderator.moderator_id,
+                    exposure.id,
+                    outcome.id,
+                    moderator.id,
                 ].join(':');
                 if (effectSizesMap[key]) {
                     visibleEffectSizes.push(effectSizesMap[key]);
                 } else {
-                    visibleEffectSizes.push(blankEffectSizeViewModel(
-                        exposure.exposure_id,
-                        outcome.outcome_id,
-                        moderator.moderator_id,
+                    visibleEffectSizes.push(blankEffectSize(
+                        exposure.id,
+                        outcome.id,
+                        moderator.id,
                         effectSizeDisplayName(exposure, outcome, moderator)
                     ));
                 }
             });
         });
     });
-    function update(model: EffectSizeViewModel) {
+    function update(model: EffectSize) {
         const effectSizes = review.effect_sizes.slice();
         for (let i = 0; i < review.effect_sizes.length; i++) {
             const effectSize = review.effect_sizes[i];
@@ -643,6 +435,7 @@ function EffectSizesView(props: EffectSizesProps) {
                     key={idx}
                     model={effectSize}
                     update={update}
+                    displayName=''
                 />
             )}
         </section>
@@ -650,9 +443,9 @@ function EffectSizesView(props: EffectSizesProps) {
 }
 
 function effectSizeDisplayName(
-    exposure: ExposureViewModel,
-    outcome: OutcomeViewModel,
-    moderator: ModeratorViewModel
+    exposure: Exposure,
+    outcome: Outcome,
+    moderator: Moderator
 ): string {
     return exposure.content_specifics + ' ' +
         outcome.specific_variable + ' ' +
@@ -660,8 +453,9 @@ function effectSizeDisplayName(
 }
 
 type EffectSizeProps = {
-    model: EffectSizeViewModel,
-    update: EffectSizeViewModel => void
+    model: EffectSize,
+    displayName: string,
+    update: EffectSize=> void
 };
 
 function EffectSizeView(props: EffectSizeProps) {
@@ -681,7 +475,7 @@ function EffectSizeView(props: EffectSizeProps) {
     return (
         <section>
             <h3>{labels.heading_effect_size}</h3>
-            <h4>{props.model.display_name}</h4>
+            <h4>{props.displayName}</h4>
             <Input {...inputProps('team_narrative_summary')} />
             <Input {...inputProps('value')} />
             <Input {...inputProps('value_lower_bound')} />

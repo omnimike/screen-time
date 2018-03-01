@@ -8,6 +8,7 @@ import {
     reviewVMToModel
 } from './review_view';
 import type { ReviewViewModel } from './review_view';
+import { ListView } from './list_view';
 
 type State = {
     review: ReviewViewModel,
@@ -21,7 +22,16 @@ type State = {
 let state: State = {
     review: blankReviewViewModel(),
     saving: false,
-    message: null
+    message: null,
+    reviews: [
+        {
+            id: 'asdfasdf',
+            extractor_name: 'me',
+            extraction_date: '2018-02-26',
+            first_author: 'someone else',
+            year_of_publication: '2000',
+        }
+    ]
 };
 
 function save() {
@@ -59,12 +69,7 @@ function update() {
         (
             <div>
                 <SavingOverlay state={state.saving} />
-                <AlertView message={state.message} />
-                <ReviewEditView
-                    review={state.review}
-                    update={updateReview}
-                    onSave={save}
-                />
+                <ListView reviews={state.reviews} view={()=>{}} />
             </div>
         ),
         document.getElementById('container')
@@ -77,23 +82,6 @@ function SavingOverlay({state}) {
     );
 }
 
-function AlertView({message}) {
-    let cls = 'd-none';
-    let text = '';
-    if (message) {
-        if (message.type === 'success') {
-            cls = 'alert-success';
-        } else if (message.type === 'error') {
-            cls = 'alert-danger';
-        }
-        text = message.value;
-    }
-    return (
-        <div className={`alert ${cls}`} role="alert">
-            {text}
-        </div>
-    );
-}
 
 function updateReview(review) {
     state.review = review;
