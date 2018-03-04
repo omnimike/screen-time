@@ -10,7 +10,7 @@ mkdir -p build_staging
 yarn run webpack
 cp -r server build_staging
 rm -rf build_staging/server/__pycache__
-BUNDLE=build-$(date +"%s").tar.gz
+BUNDLE=build.tar.gz
 cd build_staging
 tar czf $BUNDLE server
 scp -r -i ~/.ssh/screen-time.pem $BUNDLE ubuntu@52.65.188.67:~
