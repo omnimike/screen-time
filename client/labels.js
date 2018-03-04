@@ -5,6 +5,9 @@ export default {
     table_heading_first_author: 'Author',
     table_heading_year_of_publication: 'Year',
 
+    button_add_review: 'Add Review',
+    button_list_reviews: 'Back',
+
     heading_review: 'Review',
     heading_extraction_info: 'Extraction Info',
     heading_review_id: 'Review Identification',

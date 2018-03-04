@@ -18,7 +18,7 @@ import {
     blankEffectSize
 } from './models';
 
-type ReviewEditViewProps = {
+export type ReviewEditViewProps = {
     model: Review | null,
     onSave: Review => void
 };
@@ -34,6 +34,8 @@ export class ReviewEditView extends React.Component<
     ReviewEditViewState
 > {
     state: ReviewEditViewState;
+    update: Function;
+    onSave: Function;
 
     constructor(props: {model: Review, update: (Review) => void}) {
         super(props);
@@ -41,8 +43,8 @@ export class ReviewEditView extends React.Component<
             model: props.model || blankReview(),
             message: null
         };
-        this.update.bind(this);
-        this.onSave.bind(this);
+        this.update = this.update.bind(this);
+        this.onSave = this.onSave.bind(this);
     }
 
     update(model: Review) {

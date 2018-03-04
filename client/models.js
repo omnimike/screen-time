@@ -3,7 +3,7 @@
 import uuid from './vendor/uuid';
 
 export type Review = {
-    id: string,
+    id: integer,
     extractor_name: string,
     extraction_date: string,
     first_author: string,

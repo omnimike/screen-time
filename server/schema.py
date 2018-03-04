@@ -2,8 +2,6 @@
 from sqlalchemy import \
     Table, \
     Column, \
-    Integer, \
-    Numeric, \
     String, \
     Text, \
     Boolean, \
@@ -25,20 +23,20 @@ reviews_table = Table(
     Column('extractor_name', String(255), nullable=False, default=''),
     Column('extraction_date', String(255), nullable=False, default=''),
     Column('first_author', String(255), nullable=False, default=''),
-    Column('year_of_publication', Integer()),
+    Column('year_of_publication', String(255), nullable=False, default=''),
     Column('search_strategy_desc', String(255), nullable=False, default=''),
     Column('sample_age_desc', String(255), nullable=False, default=''),
-    Column('sample_age_lowest_mean', Numeric(10)),
-    Column('sample_age_highest_mean', Numeric(10)),
+    Column('sample_age_lowest_mean', String(255), nullable=False, default=''),
+    Column('sample_age_highest_mean', String(255), nullable=False, default=''),
     Column('are_you_sure', Boolean()),
     Column('inclusion_exclusion_concerns', String(255), nullable=False, default=''),
-    Column('earliest_publication_year', Integer()),
-    Column('latest_publication_year', Integer()),
-    Column('number_of_studies', Integer()),
-    Column('number_of_samples', Integer()),
-    Column('rating_of_low_risk_bias', Numeric(10)),
-    Column('rating_of_moderate_risk_bias', Numeric(10)),
-    Column('rating_of_high_risk_bias', Numeric(10)),
+    Column('earliest_publication_year', String(255), nullable=False, default=''),
+    Column('latest_publication_year', String(255), nullable=False, default=''),
+    Column('number_of_studies', String(255), nullable=False, default=''),
+    Column('number_of_samples', String(255), nullable=False, default=''),
+    Column('rating_of_low_risk_bias', String(255), nullable=False, default=''),
+    Column('rating_of_moderate_risk_bias', String(255), nullable=False, default=''),
+    Column('rating_of_high_risk_bias', String(255), nullable=False, default=''),
     Column('bias_rating_system', String(255), nullable=False, default=''),
     Column('bias_rating_system_reference', String(255), nullable=False, default=''),
     Column('level_of_evidence_judgement_1', String(255), nullable=False, default=''),
@@ -93,10 +91,10 @@ effect_sizes_table = Table(
     Column('outcome_id', String(50), ForeignKey('outcomes.id')),
     Column('moderator_id', String(50), ForeignKey('moderators.id')),
     Column('team_narrative_summary', String(255), nullable=False, default=''),
-    Column('value', Numeric(10)),
-    Column('value_lower_bound', Numeric(10)),
-    Column('value_upper_bound', Numeric(10)),
-    Column('p_value', Numeric(10)),
+    Column('value', String(255), nullable=False, default=''),
+    Column('value_lower_bound', String(255), nullable=False, default=''),
+    Column('value_upper_bound', String(255), nullable=False, default=''),
+    Column('p_value', String(255), nullable=False, default=''),
     Column('statistical_test', String(255), nullable=False, default=''),
     Column('comments', Text, nullable=False, default=''),
 )
