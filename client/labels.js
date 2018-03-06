@@ -86,6 +86,11 @@ export default {
     heading_effect_size: 'Effect Size',
     subheading_quantitative_strength: 'Quantitative Strength of Association',
 
+    subheading_effect_size_for: 'for',
+    subheading_effect_size_exposure: 'Exposure',
+    subheading_effect_size_outcome: 'Outcome',
+    subheading_effect_size_moderator: 'Moderator',
+
     label_effect_size_team_narrative_summary: 'Team\'s Narrative Summary',
     label_effect_size_value: 'Value',
     label_effect_size_value_lower_bound: 'Value - CI lower bound',

@@ -104,7 +104,7 @@ export function blankReview(): Review {
         amstar_2: [],
         exposures: [],
         outcomes: [],
-        moderators: [],
+        moderators: [overallModerator()],
         effect_sizes: [],
     };
 }
@@ -142,6 +142,14 @@ export function blankModerator(): Moderator {
         id: uuid(),
         level: '',
         category: '',
+    };
+}
+
+export function overallModerator(): Moderator {
+    return {
+        id: uuid(),
+        level: 'Overall',
+        category: 'Overall',
     };
 }
 

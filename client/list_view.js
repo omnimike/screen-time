@@ -2,7 +2,7 @@
 
 import React from 'react';
 import labels from './labels';
-import { Button } from './components';
+import { PrimaryButton } from './components';
 
 type ListViewReviewModel = {
     id: string,
@@ -54,9 +54,9 @@ export class ListView extends React.Component<
         };
         return (
             <div>
-                <Button onClick={this.props.add}>
+                <PrimaryButton onClick={this.props.add}>
                     {labels.button_add_review}
-                </Button>
+                </PrimaryButton>
                 <table className="table">
                     <thead>
                         <tr>

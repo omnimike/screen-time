@@ -3,6 +3,7 @@
 import React from 'react';
 import labels from './labels';
 import { delimIndexBy } from './utils';
+import { PrimaryButton, SecondaryButton, DangerButton } from './components';
 import type {
     Review,
     Exposure,
@@ -100,7 +101,7 @@ export class ReviewEditView extends React.Component<
                         })
                     }
                 />
-                <SaveButton onClick={this.onSave}>{labels.button_save}</SaveButton>
+                <PrimaryButton onClick={this.onSave}>{labels.button_save}</PrimaryButton>
             </div>
         );
     }
@@ -209,9 +210,9 @@ function ExposuresView(props: SectionProps<Exposure[]>) {
                     remove={removeExposure(i)}
                 />
             )}
-            <AddButton onClick={create}>
+            <SecondaryButton onClick={create}>
                 {labels.button_exposure_add}
-            </AddButton>
+            </SecondaryButton>
         </section>
     );
 }
@@ -244,9 +245,9 @@ function ExposureView(props: SubItemProps<Exposure>) {
             <Input {...inputProps('setting_category')} />
             <Input {...inputProps('social_environment_specific')} />
             <Input {...inputProps('social_environment_general')} />
-            <RemoveButton onClick={props.remove}>
+            <DangerButton onClick={props.remove}>
                 {labels.button_exposure_remove}
-            </RemoveButton>
+            </DangerButton>
         </section>
     );
 }
@@ -280,9 +281,9 @@ function OutcomesView(props: SectionProps<Outcome[]>) {
                     remove={remove(i)}
                 />
             )}
-            <AddButton onClick={create}>
+            <SecondaryButton onClick={create}>
                 {labels.button_outcome_add}
-            </AddButton>
+            </SecondaryButton>
         </section>
     );
 }
@@ -309,9 +310,9 @@ function OutcomeView(props: SubItemProps<Outcome>) {
             <Input {...inputProps('specific_variable')} />
             <Input {...inputProps('higher_order_variable')} />
             <Input {...inputProps('category')} />
-            <RemoveButton onClick={props.remove}>
+            <DangerButton onClick={props.remove}>
                 {labels.button_outcome_remove}
-            </RemoveButton>
+            </DangerButton>
         </section>
     );
 }
@@ -345,9 +346,9 @@ function ModeratorsView(props: SectionProps<Moderator[]>) {
                     remove={remove(i)}
                 />
             )}
-            <AddButton onClick={create}>
+            <SecondaryButton onClick={create}>
                 {labels.button_moderator_add}
-            </AddButton>
+            </SecondaryButton>
         </section>
     );
 }
@@ -371,9 +372,9 @@ function ModeratorView(props: SubItemProps<Moderator>) {
             <h3>{labels.heading_moderator_info}</h3>
             <Input {...inputProps('level')} />
             <Input {...inputProps('category')} />
-            <RemoveButton onClick={props.remove}>
+            <DangerButton onClick={props.remove}>
                 {labels.button_moderator_remove}
-            </RemoveButton>
+            </DangerButton>
         </section>
     );
 }
@@ -400,14 +401,27 @@ function EffectSizesView(props: EffectSizesProps) {
                     moderator.id,
                 ].join(':');
                 if (effectSizesMap[key]) {
-                    visibleEffectSizes.push(effectSizesMap[key]);
+                    visibleEffectSizes.push({
+                        effectSize: effectSizesMap[key],
+                        displayName: effectSizeDisplayName(
+                            exposure,
+                            outcome,
+                            moderator,
+                        ),
+                    });
                 } else {
-                    visibleEffectSizes.push(blankEffectSize(
-                        exposure.id,
-                        outcome.id,
-                        moderator.id,
-                        effectSizeDisplayName(exposure, outcome, moderator)
-                    ));
+                    visibleEffectSizes.push({
+                        effectSize: blankEffectSize(
+                            exposure.id,
+                            outcome.id,
+                            moderator.id
+                        ),
+                        displayName: effectSizeDisplayName(
+                            exposure,
+                            outcome,
+                            moderator,
+                        ),
+                    });
                 }
             });
         });
@@ -432,12 +446,12 @@ function EffectSizesView(props: EffectSizesProps) {
 
     return (
         <section>
-            {visibleEffectSizes.map((effectSize, idx) =>
+            {visibleEffectSizes.map(({effectSize, displayName}, idx) =>
                 <EffectSizeView
                     key={idx}
                     model={effectSize}
                     update={update}
-                    displayName=''
+                    displayName={displayName}
                 />
             )}
         </section>
@@ -449,15 +463,19 @@ function effectSizeDisplayName(
     outcome: Outcome,
     moderator: Moderator
 ): string {
-    return exposure.content_specifics + ' ' +
+    return labels.subheading_effect_size_for + ' ' +
+        labels.subheading_effect_size_exposure + ' ' +
+        exposure.content_specifics + ' ' +
+        labels.subheading_effect_size_outcome + ' ' +
         outcome.specific_variable + ' ' +
+        labels.subheading_effect_size_moderator + ' ' +
         moderator.level;
 }
 
 type EffectSizeProps = {
     model: EffectSize,
     displayName: string,
-    update: EffectSize=> void
+    update: EffectSize => void,
 };
 
 function EffectSizeView(props: EffectSizeProps) {
@@ -477,7 +495,7 @@ function EffectSizeView(props: EffectSizeProps) {
     return (
         <section>
             <h3>{labels.heading_effect_size}</h3>
-            <h4>{props.displayName}</h4>
+            <span className="effect-size-name">{props.displayName}</span>
             <Input {...inputProps('team_narrative_summary')} />
             <Input {...inputProps('value')} />
             <Input {...inputProps('value_lower_bound')} />
@@ -487,14 +505,6 @@ function EffectSizeView(props: EffectSizeProps) {
             <Input {...inputProps('comments')} />
         </section>
     );
-}
-
-function AddButton(props) {
-    return <button className="btn btn-secondary" onClick={props.onClick}>{props.children}</button>;
-}
-
-function RemoveButton(props) {
-    return <button className="btn btn-danger" onClick={props.onClick}>{props.children}</button>;
 }
 
 function Input({label, value, update}) {
@@ -524,8 +534,3 @@ function Checkbox({label, value, update}) {
         </div>
     );
 }
-
-function SaveButton(props) {
-    return <button className="btn btn-primary" {...props}>{props.children}</button>;
-}
-
