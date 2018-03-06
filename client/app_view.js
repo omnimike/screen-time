@@ -96,10 +96,14 @@ export class AppView extends React.Component<
         return (
             <div>
                 {viewState.type === 'list' &&
-                    <ListView 
-                        view={this.viewReview}
-                        add={this.addReview}
-                    />
+                    <div>
+                        <PrimaryButton onClick={this.addReview}>
+                            {labels.button_add_review}
+                        </PrimaryButton>
+                        <ListView 
+                            view={this.viewReview}
+                        />
+                    </div>
                 }
                 {viewState.type === 'edit' &&
                     <div>

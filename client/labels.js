@@ -6,7 +6,7 @@ export default {
     table_heading_year_of_publication: 'Year',
 
     button_add_review: 'Add Review',
-    button_list_reviews: 'Back',
+    button_list_reviews: 'Back to Review List',
 
     heading_review: 'Review',
     heading_extraction_info: 'Extraction Info',
@@ -99,5 +99,10 @@ export default {
     label_effect_size_statistical_test: 'Statistical Test',
     label_effect_size_comments: 'Comments',
 
-    button_save: 'Save'
+    button_save: 'Save',
+
+    message_review_saved: 'Review saved sucessfully',
+    message_review_error: 'An unexpected error has occurred',
+
+    validation_error_empty: 'Field cannot be left blank. Use NA (not applicable) or NR (not reported) for missing values.',
 };

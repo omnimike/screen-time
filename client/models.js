@@ -1,9 +1,10 @@
 // @flow
 
 import uuid from './vendor/uuid';
+import labels from './labels';
 
 export type Review = {
-    id: integer,
+    id: string,
     extractor_name: string,
     extraction_date: string,
     first_author: string,

@@ -21,12 +21,14 @@ import {
 
 export type ReviewEditViewProps = {
     model: Review | null,
-    onSave: Review => void
+    onSave: Review => void,
 };
+
+type MessageType = 'success' | 'error';
 
 type ReviewEditViewState = {
     model: Review,
-    message: null | {type: 'success' | 'error', text: string}
+    message: null | {type: MessageType, text: string},
 };
 
 export class ReviewEditView extends React.Component<
@@ -52,8 +54,33 @@ export class ReviewEditView extends React.Component<
         this.setState({...this.state, model});
     }
 
+    setMessage(type: MessageType, text: string) {
+        this.setState({
+            ...this.state,
+            message: {
+                type,
+                text
+            }
+        });
+    }
+
     onSave() {
-        this.props.onSave(this.state.model);
+        const review = this.state.model;
+        fetch('/reviews/' + review.id, {
+            method: 'PUT',
+            body: JSON.stringify(review),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            if (res.ok) {
+                this.props.onSave(review);
+                this.setMessage('success', labels.message_review_saved);
+            } else {
+                this.setMessage('error', labels.message_review_error);
+            }
+            window.scrollTo(0, 0);
+        });
     }
 
     render() {

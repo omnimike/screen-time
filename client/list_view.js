@@ -2,7 +2,6 @@
 
 import React from 'react';
 import labels from './labels';
-import { PrimaryButton } from './components';
 
 type ListViewReviewModel = {
     id: string,
@@ -14,7 +13,6 @@ type ListViewReviewModel = {
 
 type ListViewProps = {
     view: (string) => void,
-    add: () => void,
 };
 
 type ListViewState = {
@@ -54,9 +52,6 @@ export class ListView extends React.Component<
         };
         return (
             <div>
-                <PrimaryButton onClick={this.props.add}>
-                    {labels.button_add_review}
-                </PrimaryButton>
                 <table className="table">
                     <thead>
                         <tr>
