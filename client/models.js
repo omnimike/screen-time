@@ -172,3 +172,112 @@ export function blankEffectSize(
         comments: '',
     };
 }
+
+export type ValidationError = string;
+
+export type ReviewValidationErrors = {
+    extractor_name?: ValidationError[],
+    extraction_date?: ValidationError[],
+    first_author?: ValidationError[],
+    year_of_publication?: ValidationError[],
+    search_strategy_desc?: ValidationError[],
+    sample_age_desc?: ValidationError[],
+    sample_age_lowest_mean?: ValidationError[],
+    sample_age_highest_mean?: ValidationError[],
+    inclusion_exclusion_concerns?: ValidationError[],
+    earliest_publication_year?: ValidationError[],
+    latest_publication_year?: ValidationError[],
+    number_of_studies?: ValidationError[],
+    number_of_samples?: ValidationError[],
+    rating_of_low_risk_bias?: ValidationError[],
+    rating_of_moderate_risk_bias?: ValidationError[],
+    rating_of_high_risk_bias?: ValidationError[],
+    bias_rating_system?: ValidationError[],
+    bias_rating_system_reference?: ValidationError[],
+    level_of_evidence_judgement_1?: ValidationError[],
+    level_of_evidence_judgement_2?: ValidationError[],
+    level_of_evidence_judgement_3?: ValidationError[],
+    exposures: Array<ExposureValidationErrors>,
+    outcomes: Array<OutcomeValidationErrors>,
+    moderators: Array<ModeratorValidationErrors>,
+    effect_sizes: Array<EffectSizeValidationErrors>,
+};
+
+export type ExposureValidationErrors = {
+    content_specifics: ValidationError[],
+    content_category: ValidationError[],
+    measure: ValidationError[],
+    measure_type: ValidationError[],
+    device_type: ValidationError[],
+    device_category: ValidationError[],
+    device_portability: ValidationError[],
+    setting: ValidationError[],
+    setting_category: ValidationError[],
+    social_environment_specific: ValidationError[],
+    social_environment_general: ValidationError[],
+};
+
+export type OutcomeValidationErrors = {
+    measure: ValidationError[],
+    measure_type: ValidationError[],
+    specific_variable: ValidationError[],
+    higher_order_variable: ValidationError[],
+    category: ValidationError[],
+};
+
+export type ModeratorValidationErrors = {
+    level: ValidationError[],
+    category: ValidationError[],
+};
+
+export type EffectSizeValidationErrors = {
+    team_narrative_summary: ValidationError[],
+    value: ValidationError[],
+    value_lower_bound: ValidationError[],
+    value_upper_bound: ValidationError[],
+    p_value: ValidationError[],
+    statistical_test: ValidationError[],
+    comments: ValidationError[],
+};
+
+export function validateReview(review: Review): ReviewValidationErrors {
+    const errors = {
+        exposures: [],
+        outcomes: [],
+        moderators: [],
+        effect_sizes: [],
+    };
+    const nonEmptyFields = [
+        'extractor_name',
+        'extraction_date',
+        'first_author',
+        'year_of_publication',
+        'search_strategy_desc',
+        'sample_age_desc',
+        'sample_age_lowest_mean',
+        'sample_age_highest_mean',
+        'inclusion_exclusion_concerns',
+        'earliest_publication_year',
+        'latest_publication_year',
+        'number_of_studies',
+        'number_of_samples',
+        'rating_of_low_risk_bias',
+        'rating_of_moderate_risk_bias',
+        'rating_of_high_risk_bias',
+        'bias_rating_system',
+        'bias_rating_system_reference',
+        'level_of_evidence_judgement_1',
+        'level_of_evidence_judgement_2',
+        'level_of_evidence_judgement_3',
+    ];
+    nonEmptyFields.forEach(field => {
+        const val = review[field];
+        if (val === '') {
+            errors[field] = [labels.validation_error_empty];
+        }
+    });
+    return errors;
+}
+
+export function validateEffectSize() {
+}
