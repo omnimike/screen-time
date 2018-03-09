@@ -101,8 +101,9 @@ export default {
 
     button_save: 'Save',
 
-    message_review_saved: 'Review saved sucessfully',
-    message_review_error: 'An unexpected error has occurred',
+    message_review_saved: 'Review saved sucessfully.',
+    message_review_error: 'An unexpected error has occurred.',
+    message_validation_error: 'Some fields have been left blank. Please fill them with NR (not recorded) or NA (not applicable) as appropriate.',
 
     validation_error_empty: 'Field cannot be left blank. Use NA (not applicable) or NR (not reported) for missing values.',
 };

@@ -9,14 +9,16 @@ import type {
     Exposure,
     Outcome,
     Moderator,
-    EffectSize
+    EffectSize,
+    ReviewValidationErrors
 } from './models';
 import {
     blankReview,
     blankExposure,
     blankOutcome,
     blankModerator,
-    blankEffectSize
+    blankEffectSize,
+    validateReview
 } from './models';
 
 export type ReviewEditViewProps = {
@@ -29,6 +31,7 @@ type MessageType = 'success' | 'error';
 type ReviewEditViewState = {
     model: Review,
     message: null | {type: MessageType, text: string},
+    validationErrors: ReviewValidationErrors | null
 };
 
 export class ReviewEditView extends React.Component<
@@ -44,19 +47,19 @@ export class ReviewEditView extends React.Component<
         super(props);
         this.state = {
             model: props.model || blankReview(),
-            message: null
+            message: null,
+            validationErrors: null
         };
         this.update = this.update.bind(this);
         this.onSave = this.onSave.bind(this);
     }
 
     update(model: Review) {
-        this.setState({...this.state, model});
+        this.setState({model});
     }
 
     setMessage(type: MessageType, text: string) {
         this.setState({
-            ...this.state,
             message: {
                 type,
                 text
@@ -64,36 +67,51 @@ export class ReviewEditView extends React.Component<
         });
     }
 
-    onSave() {
+    onSave(evt: SyntheticInputEvent) {
         const review = this.state.model;
-        fetch('/reviews/' + review.id, {
-            method: 'PUT',
-            body: JSON.stringify(review),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(res => {
-            if (res.ok) {
-                this.props.onSave(review);
-                this.setMessage('success', labels.message_review_saved);
-            } else {
-                this.setMessage('error', labels.message_review_error);
-            }
-            window.scrollTo(0, 0);
-        });
+        const result = validateReview(review);
+
+        if (result.isValid) {
+            fetch('/reviews/' + review.id, {
+                method: 'PUT',
+                body: JSON.stringify(review),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                if (res.ok) {
+                    this.props.onSave(review);
+                    this.setMessage('success', labels.message_review_saved);
+                } else {
+                    this.setMessage('error', labels.message_review_error);
+                }
+                window.scrollTo(0, 0);
+            });
+        } else {
+            this.setValidationErrors(result.errors);
+        }
+        evt.preventDefault();
+    }
+
+    setValidationErrors(errors: ReviewValidationErrors) {
+        this.setMessage('error', labels.message_validation_error);
+        this.setState({validationErrors: errors});
     }
 
     render() {
         const model = this.state.model;
+        const errors = this.state.validationErrors;
         return (
-            <div className="review-edit-view">
+            <form className="review-edit-view">
                 <AlertView message={this.state.message} />
                 <ReviewDetailsView
                     model={model}
+                    errors={errors}
                     update={this.update}
                 />
                 <ExposuresView
                     model={model.exposures}
+                    errors={errors}
                     update={val =>
                         this.update({
                             ...model,
@@ -103,6 +121,7 @@ export class ReviewEditView extends React.Component<
                 />
                 <OutcomesView
                     model={model.outcomes}
+                    errors={errors}
                     update={val =>
                         this.update({
                             ...model,
@@ -112,6 +131,7 @@ export class ReviewEditView extends React.Component<
                 />
                 <ModeratorsView
                     model={model.moderators}
+                    errors={errors}
                     update={val =>
                         this.update({
                             ...model,
@@ -121,6 +141,7 @@ export class ReviewEditView extends React.Component<
                 />
                 <EffectSizesView
                     model={model}
+                    errors={errors}
                     update={val =>
                         this.update({
                             ...model,
@@ -129,7 +150,7 @@ export class ReviewEditView extends React.Component<
                     }
                 />
                 <PrimaryButton onClick={this.onSave}>{labels.button_save}</PrimaryButton>
-            </div>
+            </form>
         );
     }
 }
@@ -155,6 +176,7 @@ function AlertView({message}) {
 
 type SectionProps<ViewModelType> = {
     model: ViewModelType,
+    errors: ReviewValidationErrors | null,
     update: (ViewModelType) => void,
 };
 
@@ -170,6 +192,7 @@ function ReviewDetailsView(props: SectionProps<Review>) {
         return {
             label: labels['label_review_' + field],
             value: props.model[field],
+            errors: field !== 'are_you_sure' ? (props.errors !== null ? props.errors[field] : '') : '',
             update: val => {
                 props.update({
                     ...props.model,
@@ -534,15 +557,16 @@ function EffectSizeView(props: EffectSizeProps) {
     );
 }
 
-function Input({label, value, update}) {
+function Input({label, value, update, errors}) {
     function onChange(e) {
         update(e.target.value);
     }
+    const errorClass = errors && errors.length ? 'is-invalid' : '';
     return (
         <div>
             <label>
                 <div>{label}</div>
-                <input className="long-input" value={value} onChange={onChange}/>
+                <input className={'long-input form-control ' + errorClass} value={value} onChange={onChange}/>
             </label>
         </div>
     );

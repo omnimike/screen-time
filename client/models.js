@@ -173,6 +173,13 @@ export function blankEffectSize(
     };
 }
 
+export type ReviewValidationResult = {
+    isValid: true
+} | {
+    isValid: false,
+    errors: ReviewValidationErrors
+};
+
 export type ValidationError = string;
 
 export type ReviewValidationErrors = {
@@ -240,8 +247,8 @@ export type EffectSizeValidationErrors = {
     comments: ValidationError[],
 };
 
-export function validateReview(review: Review): ReviewValidationErrors {
-    const errors = {
+export function validateReview(review: Review): ReviewValidationResult {
+    const errors: ReviewValidationErrors = {
         exposures: [],
         outcomes: [],
         moderators: [],
@@ -270,14 +277,20 @@ export function validateReview(review: Review): ReviewValidationErrors {
         'level_of_evidence_judgement_2',
         'level_of_evidence_judgement_3',
     ];
+    let isValid = true;
     nonEmptyFields.forEach(field => {
         const val = review[field];
         if (val === '') {
+            isValid = false;
             errors[field] = [labels.validation_error_empty];
         }
     });
-    return errors;
-}
-
-export function validateEffectSize() {
+    if (isValid) {
+        return {isValid: true};
+    } else {
+        return {
+            isValid: false,
+            errors
+        };
+    }
 }
