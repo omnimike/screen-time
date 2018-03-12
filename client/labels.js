@@ -103,7 +103,10 @@ export default {
 
     message_review_saved: 'Review saved sucessfully.',
     message_review_error: 'An unexpected error has occurred.',
-    message_validation_error: 'Some fields have been left blank. Please fill them with NR (not recorded) or NA (not applicable) as appropriate.',
+    message_validation_error: 'Please review the fields below and correct any errors.',
 
-    validation_error_empty: 'Field cannot be left blank. Use NA (not applicable) or NR (not reported) for missing values.',
+    validation_error_EMPTY: 'Enter NA (not applicable) or NR (not recorded)',
+    validation_error_NOT_AN_INTEGER: 'Must be an integer',
+    validation_error_NOT_A_DECIMAL: 'Must be a number',
+    validation_error_NOT_A_YEAR: 'Must be a 4 digit year',
 };

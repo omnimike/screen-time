@@ -10,7 +10,11 @@ import type {
     Outcome,
     Moderator,
     EffectSize,
-    ReviewValidationErrors
+    ReviewValidationErrors,
+    ExposureValidationErrors,
+    OutcomeValidationErrors,
+    ModeratorValidationErrors,
+    EffectSizeValidationErrors,
 } from './models';
 import {
     blankReview,
@@ -18,7 +22,8 @@ import {
     blankOutcome,
     blankModerator,
     blankEffectSize,
-    validateReview
+    validateReview,
+    effectSizeValidator,
 } from './models';
 
 export type ReviewEditViewProps = {
@@ -68,6 +73,7 @@ export class ReviewEditView extends React.Component<
     }
 
     onSave(evt: SyntheticInputEvent) {
+        evt.preventDefault();
         const review = this.state.model;
         const result = validateReview(review);
 
@@ -90,7 +96,6 @@ export class ReviewEditView extends React.Component<
         } else {
             this.setValidationErrors(result.errors);
         }
-        evt.preventDefault();
     }
 
     setValidationErrors(errors: ReviewValidationErrors) {
@@ -111,7 +116,7 @@ export class ReviewEditView extends React.Component<
                 />
                 <ExposuresView
                     model={model.exposures}
-                    errors={errors}
+                    errors={errors && errors.exposures || null}
                     update={val =>
                         this.update({
                             ...model,
@@ -121,7 +126,7 @@ export class ReviewEditView extends React.Component<
                 />
                 <OutcomesView
                     model={model.outcomes}
-                    errors={errors}
+                    errors={errors && errors.outcomes || null}
                     update={val =>
                         this.update({
                             ...model,
@@ -131,7 +136,7 @@ export class ReviewEditView extends React.Component<
                 />
                 <ModeratorsView
                     model={model.moderators}
-                    errors={errors}
+                    errors={errors && errors.moderators || null}
                     update={val =>
                         this.update({
                             ...model,
@@ -141,7 +146,7 @@ export class ReviewEditView extends React.Component<
                 />
                 <EffectSizesView
                     model={model}
-                    errors={errors}
+                    errors={errors && errors.effect_sizes || null}
                     update={val =>
                         this.update({
                             ...model,
@@ -174,25 +179,26 @@ function AlertView({message}) {
     );
 }
 
-type SectionProps<ViewModelType> = {
+type SectionProps<ViewModelType, ValidationErrorType> = {
     model: ViewModelType,
-    errors: ReviewValidationErrors | null,
+    errors: ValidationErrorType | null,
     update: (ViewModelType) => void,
 };
 
-type SubItemProps<ViewModelType> = {
+type SubItemProps<ViewModelType, ValidationErrorType> = {
     model: ViewModelType,
+    errors: ValidationErrorType | null,
     update: (ViewModelType, number) => void,
-    remove: () => void,
+    remove: (SyntheticInputEvent) => void,
     idx: number,
 };
 
-function ReviewDetailsView(props: SectionProps<Review>) {
+function ReviewDetailsView(props: SectionProps<Review, ReviewValidationErrors>) {
     function inputProps(field) {
         return {
             label: labels['label_review_' + field],
             value: props.model[field],
-            errors: field !== 'are_you_sure' ? (props.errors !== null ? props.errors[field] : '') : '',
+            error: field !== 'are_you_sure' ? (props.errors ? props.errors[field] : '') : '',
             update: val => {
                 props.update({
                     ...props.model,
@@ -231,19 +237,21 @@ function ReviewDetailsView(props: SectionProps<Review>) {
     );
 }
 
-function ExposuresView(props: SectionProps<Exposure[]>) {
+function ExposuresView(props: SectionProps<Exposure[], ExposureValidationErrors[]>) {
     function update(model: Exposure, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
         props.update(newArr);
     }
-    function create() {
+    function create(evt) {
+        evt.preventDefault();
         const newArr = props.model.slice();
         newArr.push(blankExposure());
         props.update(newArr);
     }
-    function removeExposure(idx: number) {
-        return () => {
+    function remove(idx: number) {
+        return (evt) => {
+            evt.preventDefault();
             const newArr = props.model.slice();
             newArr.splice(idx, 1);
             props.update(newArr);
@@ -256,8 +264,9 @@ function ExposuresView(props: SectionProps<Exposure[]>) {
                     key={i}
                     idx={i}
                     model={exposure}
+                    errors={props.errors && props.errors[i]}
                     update={update}
-                    remove={removeExposure(i)}
+                    remove={remove(i)}
                 />
             )}
             <SecondaryButton onClick={create}>
@@ -267,11 +276,12 @@ function ExposuresView(props: SectionProps<Exposure[]>) {
     );
 }
 
-function ExposureView(props: SubItemProps<Exposure>) {
+function ExposureView(props: SubItemProps<Exposure, ExposureValidationErrors>) {
     function inputProps(field) {
         return {
             label: labels['label_exposure_' + field],
             value: props.model[field],
+            error: props.errors && props.errors[field],
             update: val => {
                 props.update({
                     ...props.model,
@@ -302,19 +312,21 @@ function ExposureView(props: SubItemProps<Exposure>) {
     );
 }
 
-function OutcomesView(props: SectionProps<Outcome[]>) {
+function OutcomesView(props: SectionProps<Outcome[], OutcomeValidationErrors[]>) {
     function update(model: Outcome, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
         props.update(newArr);
     }
-    function create() {
+    function create(evt) {
+        evt.preventDefault();
         const newArr = props.model.slice();
         newArr.push(blankOutcome());
         props.update(newArr);
     }
     function remove(idx: number) {
-        return () => {
+        return (evt) => {
+            evt.preventDefault();
             const newArr = props.model.slice();
             newArr.splice(idx, 1);
             props.update(newArr);
@@ -327,6 +339,7 @@ function OutcomesView(props: SectionProps<Outcome[]>) {
                     key={i}
                     idx={i}
                     model={model}
+                    errors={props.errors && props.errors[i]}
                     update={update}
                     remove={remove(i)}
                 />
@@ -338,11 +351,12 @@ function OutcomesView(props: SectionProps<Outcome[]>) {
     );
 }
 
-function OutcomeView(props: SubItemProps<Outcome>) {
+function OutcomeView(props: SubItemProps<Outcome, OutcomeValidationErrors>) {
     function inputProps(field) {
         return {
             label: labels['label_outcome_' + field],
             value: props.model[field],
+            error: props.errors && props.errors[field],
             update: val => {
                 props.update({
                     ...props.model,
@@ -367,19 +381,21 @@ function OutcomeView(props: SubItemProps<Outcome>) {
     );
 }
 
-function ModeratorsView(props: SectionProps<Moderator[]>) {
+function ModeratorsView(props: SectionProps<Moderator[], ModeratorValidationErrors[]>) {
     function update(model: Moderator, i: number) {
         const newArr = props.model.slice();
         newArr[i] = model;
         props.update(newArr);
     }
-    function create() {
+    function create(evt) {
+        evt.preventDefault();
         const newArr = props.model.slice();
         newArr.push(blankModerator());
         props.update(newArr);
     }
     function remove(idx: number) {
-        return () => {
+        return (evt) => {
+            evt.preventDefault();
             const newArr = props.model.slice();
             newArr.splice(idx, 1);
             props.update(newArr);
@@ -392,6 +408,7 @@ function ModeratorsView(props: SectionProps<Moderator[]>) {
                     key={i}
                     idx={i}
                     model={model}
+                    errors={props.errors && props.errors[i]}
                     update={update}
                     remove={remove(i)}
                 />
@@ -403,11 +420,12 @@ function ModeratorsView(props: SectionProps<Moderator[]>) {
     );
 }
 
-function ModeratorView(props: SubItemProps<Moderator>) {
+function ModeratorView(props: SubItemProps<Moderator, ModeratorValidationErrors>) {
     function inputProps(field) {
         return {
             label: labels['label_moderator_' + field],
             value: props.model[field],
+            error: props.errors && props.errors[field],
             update: val => {
                 props.update({
                     ...props.model,
@@ -431,11 +449,22 @@ function ModeratorView(props: SubItemProps<Moderator>) {
 
 type EffectSizesProps = {
     model: Review,
+    errors: EffectSizeValidationErrors[] | null,
     update: EffectSize[] => void,
 };
 
 function EffectSizesView(props: EffectSizesProps) {
     const review = props.model;
+    const errors = props.errors;
+    const idxMapping = {};
+    review.effect_sizes.forEach((effectSize, i) => {
+        const key = [
+            effectSize.exposure_id,
+            effectSize.outcome_id,
+            effectSize.moderator_id
+        ].join(':');
+        idxMapping[key] = i;
+    });
     const effectSizesMap = delimIndexBy(
         review.effect_sizes,
         ['exposure_id', 'outcome_id', 'moderator_id'],
@@ -453,6 +482,7 @@ function EffectSizesView(props: EffectSizesProps) {
                 if (effectSizesMap[key]) {
                     visibleEffectSizes.push({
                         effectSize: effectSizesMap[key],
+                        errors: errors && errors[idxMapping[key]] || null,
                         displayName: effectSizeDisplayName(
                             exposure,
                             outcome,
@@ -460,12 +490,14 @@ function EffectSizesView(props: EffectSizesProps) {
                         ),
                     });
                 } else {
+                    const newEffectSize = blankEffectSize(
+                        exposure.id,
+                        outcome.id,
+                        moderator.id
+                    );
                     visibleEffectSizes.push({
-                        effectSize: blankEffectSize(
-                            exposure.id,
-                            outcome.id,
-                            moderator.id
-                        ),
+                        effectSize: newEffectSize,
+                        errors: effectSizeValidator(newEffectSize),
                         displayName: effectSizeDisplayName(
                             exposure,
                             outcome,
@@ -496,10 +528,11 @@ function EffectSizesView(props: EffectSizesProps) {
 
     return (
         <section>
-            {visibleEffectSizes.map(({effectSize, displayName}, idx) =>
+            {visibleEffectSizes.map(({effectSize, errors, displayName}, idx) =>
                 <EffectSizeView
                     key={idx}
                     model={effectSize}
+                    errors={errors}
                     update={update}
                     displayName={displayName}
                 />
@@ -524,6 +557,7 @@ function effectSizeDisplayName(
 
 type EffectSizeProps = {
     model: EffectSize,
+    errors: EffectSizeValidationErrors | null,
     displayName: string,
     update: EffectSize => void,
 };
@@ -533,6 +567,7 @@ function EffectSizeView(props: EffectSizeProps) {
         return {
             label: labels['label_effect_size_' + field],
             value: props.model[field],
+            error: props.errors && props.errors[field],
             update: val => {
                 props.update({
                     ...props.model,
@@ -557,16 +592,22 @@ function EffectSizeView(props: EffectSizeProps) {
     );
 }
 
-function Input({label, value, update, errors}) {
+function Input({label, value, update, error}) {
     function onChange(e) {
         update(e.target.value);
     }
-    const errorClass = errors && errors.length ? 'is-invalid' : '';
+    const errorClass = error ? 'is-invalid' : '';
+    const errorMessage = validationMessage(error);
     return (
         <div>
             <label>
                 <div>{label}</div>
-                <input className={'long-input form-control ' + errorClass} value={value} onChange={onChange}/>
+                <input
+                    className={'long-input form-control ' + errorClass}
+                    title={errorMessage}
+                    value={value}
+                    onChange={onChange}
+                />
             </label>
         </div>
     );
@@ -584,4 +625,12 @@ function Checkbox({label, value, update}) {
             </label>
         </div>
     );
+}
+
+function validationMessage(error) {
+    if (error) {
+        return labels['validation_error_' + error];
+    } else {
+        return '';
+    }
 }
