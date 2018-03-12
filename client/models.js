@@ -304,10 +304,14 @@ function modelValidator(rules) {
 function arrayValidator(validator) {
     return (models) => {
         const errors = [];
+        let foundError = false;
         for (let i = 0; i < models.length; i++) {
             errors[i] = validator(models[i]);
+            if (errors[i]) {
+                foundError = true;
+            }
         }
-        if (errors.length > 0) {
+        if (foundError) {
             return errors;
         }
         return null;
@@ -382,7 +386,7 @@ export const reviewValidator = modelValidator({
 export function validateReview(review: Review): ValidationResult {
     const errors = reviewValidator(review);
     for (const key in errors) {
-        if (errors[key] !== undefined) {
+        if (errors[key] !== null) {
             return {
                 isValid: false,
                 errors
