@@ -76,19 +76,9 @@ export class AppView extends React.Component<
         });
     }
 
-    saveReview(review: Review) {
-        fetch('/reviews/' + review.id, {
-            method: 'PUT',
-            body: JSON.stringify(review),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(res => {
-            if (res.ok) {
-                this.addReview();
-                window.scrollTo(0, 0);
-            }
-        });
+    saveReview() {
+        this.addReview();
+        window.scrollTo(0, 0);
     }
 
     render() {
