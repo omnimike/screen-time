@@ -1,0 +1,26 @@
+
+@import '../node_modules/bootstrap/scss/bootstrap';
+@import 'app_view';
+@import 'review_view';
+
+html {
+    font-size: 10pt;
+}
+
+body {
+    padding: 1em;
+}
+
+.overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    background-color: #000;
+    z-index: 1;
+}
+
+.review-list-row {
+    cursor: pointer;
+}
+

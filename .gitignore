@@ -1,5 +1,6 @@
 
-server/static/bundle.js
+server/static/main.js
+server/static/main.css
 
 # OSX
 

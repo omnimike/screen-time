@@ -2,7 +2,7 @@
 
 import React from 'react';
 import labels from './labels';
-import { delimIndexBy } from './utils';
+import { delimIndexBy, jsonClone } from './utils';
 import { PrimaryButton, SecondaryButton, DangerButton } from './components';
 import type {
     Review,
@@ -47,6 +47,7 @@ export class ReviewEditView extends React.Component<
     state: ReviewEditViewState;
     update: Function;
     onSave: Function;
+    keyHandler: Function;
 
     constructor(props: {model: Review, update: (Review) => void}) {
         super(props);
@@ -57,6 +58,33 @@ export class ReviewEditView extends React.Component<
         };
         this.update = this.update.bind(this);
         this.onSave = this.onSave.bind(this);
+        this.keyHandler = this.keyHandler.bind(this);
+    }
+
+    componentDidMount() {
+        document.addEventListener('keypress', this.keyHandler);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keypress', this.keyHandler);
+    }
+
+    keyHandler(evt: SyntheticKeyboardEvent) {
+        if (evt.ctrlKey && evt.key === 'A') {
+            evt.preventDefault(); 
+            this.fillBlanks();
+        } else if (evt.ctrlKey && evt.key === 's') {
+            evt.preventDefault(); 
+            this.save();
+        }
+    }
+
+    fillBlanks() {
+        const review = jsonClone(this.state.model);
+        fillBlanks(review, 'na');
+        this.setState({
+            model: review
+        });
     }
 
     update(model: Review) {
@@ -74,6 +102,10 @@ export class ReviewEditView extends React.Component<
 
     onSave(evt: SyntheticInputEvent) {
         evt.preventDefault();
+        this.save();
+    }
+
+    save() {
         const review = this.state.model;
         const result = validateReview(review);
 
@@ -154,12 +186,25 @@ export class ReviewEditView extends React.Component<
                         })
                     }
                 />
-                <PrimaryButton onClick={this.onSave}>{labels.button_save}</PrimaryButton>
+                <PrimaryButton onClick={this.onSave}>
+                    {labels.button_save}
+                </PrimaryButton>
             </form>
         );
     }
 }
 
+function fillBlanks(obj: Object, filler: string): void {
+    for (const key in obj) {
+        if (obj[key] === '') {
+            obj[key] = filler;
+        } else if (Array.isArray(obj[key])) {
+            for (const elem of obj[key]) {
+                fillBlanks(elem, filler);
+            }
+        }
+    }
+}
 
 function AlertView({message}) {
     let cls = 'd-none';
@@ -173,7 +218,7 @@ function AlertView({message}) {
         text = message.text;
     }
     return (
-        <div className={`alert ${cls}`} role="alert">
+        <div className={`alert-view alert ${cls}`} role="alert">
             {text}
         </div>
     );

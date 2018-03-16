@@ -1,5 +1,7 @@
 
 export default {
+    heading_list_view: 'Screen Time Extraction Database',
+
     table_heading_extractor_name: 'Extractor',
     table_heading_extraction_date: 'Date',
     table_heading_first_author: 'Author',

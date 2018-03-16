@@ -32,6 +32,7 @@ export class AppView extends React.Component<
     addReview: Function;
     saveReview: Function;
     listReviews: Function;
+    keyHandler: Function;
 
     constructor(props: void) {
         super(props);
@@ -42,10 +43,23 @@ export class AppView extends React.Component<
         this.addReview = this.addReview.bind(this);
         this.saveReview = this.saveReview.bind(this);
         this.listReviews = this.listReviews.bind(this);
+        this.keyHandler = this.keyHandler.bind(this);
     }
 
-    start() {
-        this.render();
+    componentDidMount() {
+        document.addEventListener('keypress', this.keyHandler);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keypress', this.keyHandler);
+    }
+
+    keyHandler(evt: SyntheticKeyboardEvent) {
+        if (this.state.viewState.type === 'list') {
+            if (evt.key === 'n') {
+                this.addReview();
+            }
+        }
     }
 
     listReviews() {
@@ -84,10 +98,14 @@ export class AppView extends React.Component<
     render() {
         const viewState = this.state.viewState;
         return (
-            <div>
+            <div className="app-view">
                 {viewState.type === 'list' &&
                     <div>
-                        <PrimaryButton onClick={this.addReview}>
+                        <h1>{labels.heading_list_view}</h1>
+                        <PrimaryButton
+                            className="nav-button"
+                            onClick={this.addReview}
+                        >
                             {labels.button_add_review}
                         </PrimaryButton>
                         <ListView 
@@ -97,7 +115,10 @@ export class AppView extends React.Component<
                 }
                 {viewState.type === 'edit' &&
                     <div>
-                        <PrimaryButton onClick={this.listReviews}>
+                        <PrimaryButton
+                            className="nav-button"
+                            onClick={this.listReviews}
+                        >
                             {labels.button_list_reviews}
                         </PrimaryButton>
                         <ReviewEditView

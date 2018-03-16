@@ -33,3 +33,7 @@ export function delimIndexBy<T:Object>(
     }
     return map;
 }
+
+export function jsonClone<T>(val: T): T {
+    return JSON.parse(JSON.stringify(val));
+}
