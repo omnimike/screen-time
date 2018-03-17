@@ -10,14 +10,7 @@ export default {
     button_add_review: 'Add Review',
     button_list_reviews: 'Back to Review List',
 
-    heading_review: 'Review',
-    heading_extraction_info: 'Extraction Info',
-    heading_review_id: 'Review Identification',
-    heading_review_characteristics: 'Review Characteristics',
-    heading_risk_of_bias: 'Risk of bias in included studies',
-    subheading_review_risk_of_bias: 'Review Authors\' Rating of Risk of Bias',
-    heading_teams_level_of_evidence_judgement: 'Teams\'s Level of Evidence Judgement',
-    heading_review_quality: 'Review Quality',
+    heading_review_details: 'Review details',
 
     label_review_extractor_name: 'Extractor Name',
     label_review_extraction_date: 'Extraction Date',
@@ -41,8 +34,12 @@ export default {
     label_review_level_of_evidence_judgement_1: 'Level of Evidence Judgement 1',
     label_review_level_of_evidence_judgement_2: 'Level of Evidence Judgement 2',
     label_review_level_of_evidence_judgement_3: 'Level of Evidence Judgement 3',
+    label_review_notes: 'Notes',
 
-    heading_exposure_info: 'Exposure Info',
+    button_remove_icon: '\u2716',
+
+    heading_exposures: 'Exposures',
+    heading_exposure: 'Exposure',
     subheading_exposure_content: 'Exposure Content',
     subheading_exposure_measurement: 'Exposure Measurement',
     subheading_exposure_device: 'Exposure Device',
@@ -58,13 +55,14 @@ export default {
     label_exposure_device_portability: 'Exposure device portability',
     label_exposure_setting: 'Exposure specific setting',
     label_exposure_setting_category: 'Exposure setting category',
-    label_exposure_social_environment_specific: 'Exposure specific social environment',
-    label_exposure_social_environment_general: 'Exposure general social environment',
+    label_exposure_social_environment_specific: 'Specific social environment',
+    label_exposure_social_environment_general: 'General social environment',
 
     button_exposure_add: 'Add Exposure',
-    button_exposure_remove: 'Remove Exposure',
+    title_exposure_remove: 'Remove Exposure',
 
-    heading_outcome_info: 'Outcome Info',
+    heading_outcomes: 'Outcomes',
+    heading_outcome: 'Outcome',
     subheading_outcome_measurement: 'Outcome Measurement',
     subheading_outcome_type: 'Outcome type',
 
@@ -75,15 +73,16 @@ export default {
     label_outcome_category: 'Outcome category',
 
     button_outcome_add: 'Add Outcome',
-    button_outcome_remove: 'Remove Outcome',
+    title_outcome_remove: 'Remove Outcome',
 
-    heading_moderator_info: 'Moderator Info',
+    heading_moderators: 'Moderators',
+    heading_moderator: 'Moderator',
 
     label_moderator_level: 'Moderator Level',
     label_moderator_category: 'Moderator Category',
 
     button_moderator_add: 'Add Moderator',
-    button_moderator_remove: 'Remove Moderator',
+    title_moderator_remove: 'Remove Moderator',
 
     heading_effect_size: 'Effect Size',
     subheading_quantitative_strength: 'Quantitative Strength of Association',

@@ -3,7 +3,7 @@
 import React from 'react';
 import labels from './labels';
 import { delimIndexBy, jsonClone } from './utils';
-import { PrimaryButton, SecondaryButton, DangerButton } from './components';
+import { PrimaryButton, SecondaryButton } from './components';
 import type {
     Review,
     Exposure,
@@ -71,10 +71,10 @@ export class ReviewEditView extends React.Component<
 
     keyHandler(evt: SyntheticKeyboardEvent) {
         if (evt.ctrlKey && evt.key === 'A') {
-            evt.preventDefault(); 
+            evt.preventDefault();
             this.fillBlanks();
         } else if (evt.ctrlKey && evt.key === 's') {
-            evt.preventDefault(); 
+            evt.preventDefault();
             this.save();
         }
     }
@@ -139,7 +139,7 @@ export class ReviewEditView extends React.Component<
         const model = this.state.model;
         const errors = this.state.validationErrors;
         return (
-            <form className="review-edit-view">
+            <form className="review-view">
                 <AlertView message={this.state.message} />
                 <ReviewDetailsView
                     model={model}
@@ -254,31 +254,139 @@ function ReviewDetailsView(props: SectionProps<Review, ReviewValidationErrors>) 
     }
 
     return (
-        <section>
-            <h3>{labels.heading_extraction_info}</h3>
-            <Input {...inputProps('extractor_name')} />
-            <Input {...inputProps('extraction_date')} />
-            <Input {...inputProps('first_author')} />
-            <Input {...inputProps('year_of_publication')} />
-            <Input {...inputProps('search_strategy_desc')} />
-            <Input {...inputProps('sample_age_desc')} />
-            <Input {...inputProps('sample_age_lowest_mean')} />
-            <Input {...inputProps('sample_age_highest_mean')} />
-            <Checkbox {...inputProps('are_you_sure')} />
-            <Input {...inputProps('inclusion_exclusion_concerns')} />
-            <Input {...inputProps('earliest_publication_year')} />
-            <Input {...inputProps('latest_publication_year')} />
-            <Input {...inputProps('number_of_studies')} />
-            <Input {...inputProps('number_of_samples')} />
-            <Input {...inputProps('rating_of_low_risk_bias')} />
-            <Input {...inputProps('rating_of_moderate_risk_bias')} />
-            <Input {...inputProps('rating_of_high_risk_bias')} />
-            <Input {...inputProps('bias_rating_system')} />
-            <Input {...inputProps('bias_rating_system_reference')} />
-            <Input {...inputProps('level_of_evidence_judgement_1')} />
-            <Input {...inputProps('level_of_evidence_judgement_2')} />
-            <Input {...inputProps('level_of_evidence_judgement_3')} />
-        </section>
+        <div className="container-fluid">
+            <h3>{labels.heading_review_details}</h3>
+            <div className="row">
+                <Input
+                    inputClass="short-input"
+                    {...inputProps('extractor_name')}
+                />
+                <Input
+                    inputClass="date-input"
+                    {...inputProps('extraction_date')}
+                />
+                <Input
+                    inputClass="short-input"
+                    {...inputProps('first_author')}
+                />
+                <Input
+                    inputClass="year-input"
+                    {...inputProps('year_of_publication')}
+                />
+            </div>
+            <div className="row">
+                <Textarea
+                    className="col-6"
+                    inputClass="textarea-tall"
+                    {...inputProps('search_strategy_desc')}
+                />
+                <div className="col-6">
+                    <div className="row">
+                        <Input
+                            className="col-6"
+                            inputClass="year-input"
+                            {...inputProps('earliest_publication_year')}
+                        />
+                        <Input
+                            className="col-6"
+                            inputClass="year-input"
+                            {...inputProps('latest_publication_year')}
+                        />
+                    </div>
+                    <div className="row">
+                        <Input
+                            className="col-6"
+                            inputClass="number-input"
+                            {...inputProps('number_of_studies')}
+                        />
+                        <Input
+                            className="col-6"
+                            inputClass="number-input"
+                            {...inputProps('number_of_samples')}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <Textarea
+                    className="col-6"
+                    inputClass="textarea-short"
+                    {...inputProps('sample_age_desc')}
+                />
+                <Input
+                    className="col-3"
+                    inputClass="number-input"
+                    {...inputProps('sample_age_lowest_mean')}
+                />
+                <Input
+                    className="col-3"
+                    inputClass="number-input"
+                    {...inputProps('sample_age_highest_mean')}
+                />
+            </div>
+            <div className="row">
+                <Textarea
+                    className="col-6"
+                    inputClass="textarea-short"
+                    {...inputProps('inclusion_exclusion_concerns')}
+                />
+                <Checkbox
+                    className="col-6 align-self-center"
+                    {...inputProps('are_you_sure')}
+                />
+            </div>
+            <div className="row">
+                <Input
+                    className="col-2"
+                    inputClass="number-input"
+                    {...inputProps('rating_of_low_risk_bias')}
+                />
+                <Input
+                    className="col-2"
+                    inputClass="number-input"
+                    {...inputProps('rating_of_moderate_risk_bias')}
+                />
+                <Input
+                    className="col-2"
+                    inputClass="number-input"
+                    {...inputProps('rating_of_high_risk_bias')}
+                />
+                <Textarea
+                    className="col-3"
+                    inputClass="textarea-short"
+                    {...inputProps('bias_rating_system')}
+                />
+                <Textarea
+                    className="col-3"
+                    inputClass="textarea-short"
+                    {...inputProps('bias_rating_system_reference')}
+                />
+            </div>
+            <div className="row">
+                <Textarea
+                    className="col-4"
+                    inputClass="textarea-tall"
+                    {...inputProps('level_of_evidence_judgement_1')}
+                />
+                <Textarea
+                    className="col-4"
+                    inputClass="textarea-tall"
+                    {...inputProps('level_of_evidence_judgement_2')}
+                />
+                <Textarea
+                    className="col-4"
+                    inputClass="textarea-tall"
+                    {...inputProps('level_of_evidence_judgement_3')}
+                />
+            </div>
+            <div className="row">
+                <Textarea
+                    className="col-6"
+                    inputClass="textarea-tall"
+                    {...inputProps('notes')}
+                />
+            </div>
+        </div>
     );
 }
 
@@ -304,6 +412,7 @@ function ExposuresView(props: SectionProps<Exposure[], ExposureValidationErrors[
     }
     return (
         <section>
+            <h3>{labels.heading_exposures}</h3>
             {props.model.map((exposure, i) =>
                 <ExposureView
                     key={i}
@@ -324,6 +433,8 @@ function ExposuresView(props: SectionProps<Exposure[], ExposureValidationErrors[
 function ExposureView(props: SubItemProps<Exposure, ExposureValidationErrors>) {
     function inputProps(field) {
         return {
+            className: 'col-2',
+            inputClass: 'autofill-input',
             label: labels['label_exposure_' + field],
             value: props.model[field],
             error: props.errors && props.errors[field],
@@ -338,22 +449,44 @@ function ExposureView(props: SubItemProps<Exposure, ExposureValidationErrors>) {
 
     return (
         <section>
-            <h3>{labels.heading_exposure_info}</h3>
-            <Input {...inputProps('content_specifics')} />
-            <Input {...inputProps('content_category')} />
-            <Input {...inputProps('measure')} />
-            <Input {...inputProps('measure_type')} />
-            <Input {...inputProps('device_type')} />
-            <Input {...inputProps('device_category')} />
-            <Input {...inputProps('device_portability')} />
-            <Input {...inputProps('setting')} />
-            <Input {...inputProps('setting_category')} />
-            <Input {...inputProps('social_environment_specific')} />
-            <Input {...inputProps('social_environment_general')} />
-            <DangerButton onClick={props.remove}>
-                {labels.button_exposure_remove}
-            </DangerButton>
+            <h4>
+                <DeleteButton
+                    onClick={props.remove}
+                    title={labels.title_exposure_remove}
+                />
+                {labels.heading_exposure} {props.idx + 1}
+            </h4>
+            <div className="row">
+                <Input {...inputProps('content_specifics')} />
+                <Input {...inputProps('content_category')} />
+                <Input {...inputProps('measure')} />
+                <Input {...inputProps('measure_type')} />
+                <Input {...inputProps('setting')} />
+                <Input {...inputProps('setting_category')} />
+            </div>
+            <div className="row">
+                <Input {...inputProps('device_type')} />
+                <Input {...inputProps('device_category')} />
+                <Input {...inputProps('device_portability')} />
+                <Input {...inputProps('social_environment_specific')} />
+                <Input {...inputProps('social_environment_general')} />
+            </div>
         </section>
+    );
+}
+
+function DeleteButton({onClick, title}) {
+    return (
+        <span className="d-inline-block align-bottom">
+            <button
+                type="button"
+                className="close"
+                title={title}
+                onClick={onClick}
+            >
+                {labels.button_remove_icon}
+            </button>
+        </span>
     );
 }
 
@@ -379,6 +512,7 @@ function OutcomesView(props: SectionProps<Outcome[], OutcomeValidationErrors[]>)
     }
     return (
         <section>
+            <h3>{labels.heading_outcomes}</h3>
             {props.model.map((model, i) =>
                 <OutcomeView
                     key={i}
@@ -399,6 +533,8 @@ function OutcomesView(props: SectionProps<Outcome[], OutcomeValidationErrors[]>)
 function OutcomeView(props: SubItemProps<Outcome, OutcomeValidationErrors>) {
     function inputProps(field) {
         return {
+            className: 'col-2',
+            inputClass: 'autofill-input',
             label: labels['label_outcome_' + field],
             value: props.model[field],
             error: props.errors && props.errors[field],
@@ -413,15 +549,20 @@ function OutcomeView(props: SubItemProps<Outcome, OutcomeValidationErrors>) {
 
     return (
         <section>
-            <h3>{labels.heading_outcome_info}</h3>
-            <Input {...inputProps('measure')} />
-            <Input {...inputProps('measure_type')} />
-            <Input {...inputProps('specific_variable')} />
-            <Input {...inputProps('higher_order_variable')} />
-            <Input {...inputProps('category')} />
-            <DangerButton onClick={props.remove}>
-                {labels.button_outcome_remove}
-            </DangerButton>
+            <h4>
+                <DeleteButton
+                    onClick={props.remove}
+                    title={labels.title_outcome_remove}
+                />
+                {labels.heading_outcome} {props.idx + 1}
+            </h4>
+            <div className="row">
+                <Input {...inputProps('measure')} />
+                <Input {...inputProps('measure_type')} />
+                <Input {...inputProps('category')} />
+                <Input {...inputProps('specific_variable')} />
+                <Input {...inputProps('higher_order_variable')} />
+            </div>
         </section>
     );
 }
@@ -448,6 +589,7 @@ function ModeratorsView(props: SectionProps<Moderator[], ModeratorValidationErro
     }
     return (
         <section>
+            <h3>{labels.heading_moderators}</h3>
             {props.model.map((model, i) =>
                 <ModeratorView
                     key={i}
@@ -468,6 +610,8 @@ function ModeratorsView(props: SectionProps<Moderator[], ModeratorValidationErro
 function ModeratorView(props: SubItemProps<Moderator, ModeratorValidationErrors>) {
     function inputProps(field) {
         return {
+            className: 'col-2',
+            inputClass: 'autofill-input',
             label: labels['label_moderator_' + field],
             value: props.model[field],
             error: props.errors && props.errors[field],
@@ -482,12 +626,17 @@ function ModeratorView(props: SubItemProps<Moderator, ModeratorValidationErrors>
 
     return (
         <section>
-            <h3>{labels.heading_moderator_info}</h3>
-            <Input {...inputProps('level')} />
-            <Input {...inputProps('category')} />
-            <DangerButton onClick={props.remove}>
-                {labels.button_moderator_remove}
-            </DangerButton>
+            <h4>
+                <DeleteButton
+                    onClick={props.remove}
+                    title={labels.title_moderator_remove}
+                />
+                {labels.heading_moderator} {props.idx + 1}
+            </h4>
+            <div className="row">
+                <Input {...inputProps('level')} />
+                <Input {...inputProps('category')} />
+            </div>
         </section>
     );
 }
@@ -626,29 +775,72 @@ function EffectSizeView(props: EffectSizeProps) {
         <section>
             <h3>{labels.heading_effect_size}</h3>
             <span className="effect-size-name">{props.displayName}</span>
-            <Input {...inputProps('team_narrative_summary')} />
-            <Input {...inputProps('value')} />
-            <Input {...inputProps('value_lower_bound')} />
-            <Input {...inputProps('value_upper_bound')} />
-            <Input {...inputProps('p_value')} />
-            <Input {...inputProps('statistical_test')} />
-            <Input {...inputProps('comments')} />
+            <div className="row">
+                <Textarea
+                    className="col-4"
+                    inputClass="textarea-x-tall"
+                    {...inputProps('team_narrative_summary')}
+                />
+                <div className="col-8">
+                    <div className="row">
+                        <Input
+                            className="col-2"
+                            inputClass="number-input"
+                            {...inputProps('value')}
+                        />
+                        <Input
+                            className="col-2"
+                            inputClass="number-input"
+                            {...inputProps('value_lower_bound')}
+                        />
+                        <Input
+                            className="col-2"
+                            inputClass="number-input"
+                            {...inputProps('value_upper_bound')}
+                        />
+                        <Input
+                            className="col-2"
+                            inputClass="number-input"
+                            {...inputProps('p_value')}
+                        />
+                        <Input
+                            className="col-3"
+                            inputClass="autofill-input"
+                            {...inputProps('statistical_test')}
+                        />
+                    </div>
+                    <div className="row">
+                        <Textarea
+                            className="col-10"
+                            inputClass="textarea-short"
+                            {...inputProps('comments')}
+                        />
+                    </div>
+                </div>
+            </div>
         </section>
     );
 }
 
-function Input({label, value, update, error}) {
+function Input({
+    label,
+    value,
+    update,
+    error,
+    className='col-sm',
+    inputClass=''
+}) {
     function onChange(e) {
         update(e.target.value);
     }
     const errorClass = error ? 'is-invalid' : '';
     const errorMessage = validationMessage(error);
     return (
-        <div>
+        <div className={className}>
             <label>
                 <div>{label}</div>
                 <input
-                    className={'long-input form-control ' + errorClass}
+                    className={'form-control ' + errorClass + ' ' + inputClass}
                     title={errorMessage}
                     value={value}
                     onChange={onChange}
@@ -658,15 +850,44 @@ function Input({label, value, update, error}) {
     );
 }
 
-function Checkbox({label, value, update}) {
+function Textarea({
+    label,
+    value,
+    update,
+    error,
+    className='col-sm-12',
+    inputClass=''
+}) {
+    function onChange(e) {
+        update(e.target.value);
+    }
+    const errorClass = error ? 'is-invalid' : '';
+    const errorMessage = validationMessage(error);
+    return (
+        <div className={className}>
+            <label>
+                <div>{label}</div>
+                <textarea
+                    className={'form-control ' + errorClass + ' ' + inputClass}
+                    title={errorMessage}
+                    value={value}
+                    onChange={onChange}
+                />
+            </label>
+        </div>
+    );
+}
+
+function Checkbox({label, value, update, className}) {
     function onChange(e) {
         update(!!e.target.checked);
     }
     return (
-        <div>
+        <div className={className}>
             <label>
-                {label}
                 <input type="checkbox" value={value} onChange={onChange}/>
+                {' '}
+                {label}
             </label>
         </div>
     );

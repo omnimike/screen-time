@@ -51,7 +51,7 @@ export class ListView extends React.Component<
             return () => this.props.view(reviewId);
         };
         return (
-            <div>
+            <div className="list-view">
                 <table className="table">
                     <thead>
                         <tr>
@@ -65,7 +65,7 @@ export class ListView extends React.Component<
                         {this.state.reviews.map(review => (
                             <tr key={review.id}
                                 onClick={openView(review.id)}
-                                className="review-list-row"
+                                className="list-row"
                             >
                                 <td>{review.extractor_name}</td>
                                 <td>{review.extraction_date}</td>

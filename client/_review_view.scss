@@ -1,8 +1,43 @@
 
-.review-edit-view {
+.review-view {
 
-    .long-input {
+    .date-input {
+        width: 8em;
+    }
+
+    .year-input {
+        width: 5em;
+    }
+
+    .number-input {
+        width: 6em;
+    }
+
+    .autofill-input {
+        width: 15em;
+    }
+
+    .short-input {
         width: 20em;
+    }
+
+    .textarea-x-tall {
+        width: 100%;
+        height: 7em;
+    }
+
+    .textarea-tall {
+        width: 100%;
+        height: 5em;
+    }
+
+    .textarea-short {
+        width: 100%;
+        height: 3em;
+    }
+
+    label {
+        width: 100%;
     }
 
     .effect-size-name {
