@@ -1,4 +1,10 @@
-from flask import Flask, send_from_directory, render_template, request, jsonify
+from flask import \
+    Flask, \
+    send_from_directory, \
+    render_template, \
+    request, \
+    jsonify, \
+    Response
 from sqlalchemy import select
 from schema import \
     engine, \
@@ -7,6 +13,8 @@ from schema import \
     outcomes_table, \
     moderators_table, \
     effect_sizes_table
+from io import StringIO
+from csv import DictWriter
 
 
 app = Flask(__name__, static_url_path='')
@@ -154,6 +162,38 @@ def create_children(conn, review):
 def fill_review_id(review_id, models):
     for model in models:
         model['review_id'] = review_id
+
+
+@app.route('/reports/reviews')
+def review_report():
+    def generate():
+        fieldnames = [c.name for c in reviews_table.columns]
+        conn = engine.connect()
+        result = conn.execute(select([reviews_table]))
+        rows = (dict(row) for row in result)
+        for blob in write_report(rows, fieldnames):
+            yield blob
+        result.close()
+    return Response(generate(), mimetype='text/csv')
+
+
+def write_report(rows, fieldnames, batch_size=1000):
+    si = StringIO()
+    csv_writer = DictWriter(si, fieldnames=fieldnames)
+    csv_writer.writeheader()
+    counter = 0
+    for row in rows:
+        csv_writer.writerow(row)
+        counter += 1
+        if counter >= batch_size:
+            yield si.getvalue()
+            si.close()
+            si = StringIO()
+            csv_writer = DictWriter(si, fieldnames=fieldnames)
+            counter = 0
+    if counter > 0:
+        yield si.getvalue()
+        si.close()
 
 
 @app.route('/')
