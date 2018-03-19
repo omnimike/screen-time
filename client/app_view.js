@@ -5,7 +5,7 @@ import { ReviewEditView } from './review_view';
 import { ListView } from './list_view';
 import type { Review } from './models';
 import { blankReview } from './models';
-import { PrimaryButton } from './components';
+import { PrimaryButton, SecondaryButton } from './components';
 import labels from './labels';
 
 type AppState = {
@@ -32,6 +32,8 @@ export class AppView extends React.Component<
     addReview: Function;
     saveReview: Function;
     listReviews: Function;
+    downloadReviews: Function;
+    downloadEffectSizes: Function;
     keyHandler: Function;
 
     constructor(props: void) {
@@ -43,6 +45,8 @@ export class AppView extends React.Component<
         this.addReview = this.addReview.bind(this);
         this.saveReview = this.saveReview.bind(this);
         this.listReviews = this.listReviews.bind(this);
+        this.downloadReviews = this.downloadReviews.bind(this);
+        this.downloadEffectSizes = this.downloadEffectSizes.bind(this);
         this.keyHandler = this.keyHandler.bind(this);
     }
 
@@ -66,6 +70,14 @@ export class AppView extends React.Component<
         this.setState({
             viewState: {type: 'list'}
         });
+    }
+
+    downloadReviews() {
+        window.open('/reports/reviews');
+    }
+
+    downloadEffectSizes() {
+        window.open('/reports/effect_sizes');
     }
 
     viewReview(reviewId: string) {
@@ -102,12 +114,20 @@ export class AppView extends React.Component<
                 {viewState.type === 'list' &&
                     <div>
                         <h1>{labels.heading_list_view}</h1>
-                        <PrimaryButton
-                            className="nav-button"
-                            onClick={this.addReview}
+                        <div
+                            className="btn-group nav-bar"
+                            role="group"
                         >
-                            {labels.button_add_review}
-                        </PrimaryButton>
+                            <SecondaryButton onClick={this.downloadReviews}>
+                                {labels.button_download_reviews}
+                            </SecondaryButton>
+                            <SecondaryButton onClick={this.downloadEffectSizes}>
+                                {labels.button_download_effect_sizes}
+                            </SecondaryButton>
+                            <PrimaryButton onClick={this.addReview}>
+                                {labels.button_add_review}
+                            </PrimaryButton>
+                        </div>
                         <ListView 
                             view={this.viewReview}
                         />
@@ -115,12 +135,17 @@ export class AppView extends React.Component<
                 }
                 {viewState.type === 'edit' &&
                     <div>
-                        <PrimaryButton
-                            className="nav-button"
-                            onClick={this.listReviews}
+                        <div
+                            className="btn-group nav-bar"
+                            role="group"
                         >
-                            {labels.button_list_reviews}
-                        </PrimaryButton>
+                            <PrimaryButton
+                                className="nav-button"
+                                onClick={this.listReviews}
+                            >
+                                {labels.button_list_reviews}
+                            </PrimaryButton>
+                        </div>
                         <ReviewEditView
                             model={viewState.review}
                             onSave={this.saveReview}

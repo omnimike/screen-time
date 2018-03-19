@@ -8,6 +8,8 @@ export default {
     table_heading_year_of_publication: 'Year',
 
     button_add_review: 'Add Review',
+    button_download_reviews: 'Reviews CSV',
+    button_download_effect_sizes: 'Effect Sizes CSV',
     button_list_reviews: 'Back to Review List',
 
     heading_review_details: 'Review details',
@@ -28,7 +30,7 @@ export default {
     label_review_number_of_samples: 'N (combined sample across studies)',
     label_review_rating_of_low_risk_bias: 'Authors\' rating of % low risk risk of bias studies',
     label_review_rating_of_moderate_risk_bias: 'Authors\' rating of % moderate risk of bias studies',
-    label_review_rating_of_high_risk_bias: 'Authors\' rating of % moderate risk of bias studies',
+    label_review_rating_of_high_risk_bias: 'Authors\' rating of % high risk of bias studies',
     label_review_bias_rating_system: 'Authors\' system for rating risk of bias',
     label_review_bias_rating_system_reference: 'Reference for authors\' system for rating risk of bias',
     label_review_level_of_evidence_judgement_1: 'Level of Evidence Judgement 1',
